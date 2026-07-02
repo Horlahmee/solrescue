@@ -12,7 +12,6 @@
   --color-edge-2: #2a3542;
   --color-ink: #e6edf3;
   --color-muted: #8b98a5;
-  --color-violet: #8b5cf6;
   --font-display: var(--font-syne);
   --font-body: var(--font-dm-sans);
   --font-mono: var(--font-jetbrains-mono);
@@ -66,38 +65,11 @@ body {
   font-family: var(--font-body);
 }
 
-/* Ambient color washes — restrained glows, never lasers */
-.bg-aurora {
-  background:
-    radial-gradient(640px 420px at 18% -8%, rgb(0 229 195 / 0.14), transparent 70%),
-    radial-gradient(720px 520px at 88% 4%, rgb(139 92 246 / 0.12), transparent 70%),
-    radial-gradient(500px 380px at 55% 110%, rgb(245 166 35 / 0.06), transparent 70%);
-}
-.bg-aurora-soft {
-  background:
-    radial-gradient(520px 340px at 12% -12%, rgb(0 229 195 / 0.08), transparent 70%),
-    radial-gradient(560px 400px at 92% -6%, rgb(139 92 246 / 0.07), transparent 70%);
-}
-.bg-grid {
-  background-image:
-    linear-gradient(rgb(30 38 48 / 0.6) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(30 38 48 / 0.6) 1px, transparent 1px);
-  background-size: 44px 44px;
-  mask-image: radial-gradient(720px 480px at 50% 0%, black 30%, transparent 90%);
-}
-.glow-teal {
-  box-shadow: 0 0 40px -8px rgb(0 229 195 / 0.35);
-}
 .card-hover {
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease,
-    transform 0.2s ease;
+  transition: border-color 0.2s ease;
 }
 .card-hover:hover {
-  border-color: rgb(0 229 195 / 0.35);
-  box-shadow: 0 8px 32px -12px rgb(0 229 195 / 0.18);
-  transform: translateY(-2px);
+  border-color: var(--color-edge-2);
 }
 
 ::selection {

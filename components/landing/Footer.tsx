@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 
 const GITHUB_URL = "https://github.com/Horlahmee/solrescue";
 const SIMD_URL =
@@ -7,23 +6,19 @@ const SIMD_URL =
 
 export function FinalCta() {
   return (
-    <section className="py-20 border-t border-edge">
-      <div className="bg-aurora-soft border border-edge rounded-3xl px-8 py-14 flex flex-col items-center text-center gap-6">
-        <h2 className="font-display text-3xl sm:text-4xl leading-snug max-w-xl">
-          Find out in 30 seconds if you have SOL waiting.
-        </h2>
-        <p className="text-muted max-w-md">
-          Connect a wallet or just paste a mint address. No sign-ups, no
-          deposits, nothing to lose — literally.
-        </p>
-        <Link
-          href="/app"
-          className="glow-teal inline-flex items-center gap-2 h-12 px-6 rounded-lg bg-teal text-[#05261f] font-semibold hover:brightness-110 transition-all"
-        >
-          Launch app
-          <ArrowRight className="size-4" aria-hidden />
-        </Link>
-      </div>
+    <section className="py-24 border-t border-edge flex flex-col items-start gap-6">
+      <h2 className="font-display text-3xl sm:text-4xl leading-snug max-w-xl">
+        Find out in thirty seconds.
+      </h2>
+      <p className="text-muted max-w-md">
+        Connect a wallet or paste a mint address. No sign-up, no deposit.
+      </p>
+      <Link
+        href="/app"
+        className="inline-flex items-center h-11 px-6 rounded-md bg-teal text-[#05261f] font-semibold text-sm hover:brightness-110 transition-all"
+      >
+        Launch app
+      </Link>
     </section>
   );
 }
@@ -40,7 +35,7 @@ export function Footer() {
         rel="noopener noreferrer"
         className="hover:text-teal transition-colors"
       >
-        Source code (MIT)
+        Source (MIT)
       </a>
       <a
         href={SIMD_URL}
@@ -58,9 +53,7 @@ export function Footer() {
       >
         Security
       </a>
-      <span className="sm:ml-auto">
-        Non-custodial. Your keys never leave your wallet.
-      </span>
+      <span className="sm:ml-auto">Non-custodial by construction.</span>
     </footer>
   );
 }

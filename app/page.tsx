@@ -15,22 +15,16 @@ export default async function LandingPage() {
   ]);
 
   return (
-    <div className="bg-aurora min-h-dvh">
-      <div className="bg-grid">
-        <div className="max-w-5xl mx-auto px-6">
-          <Nav />
-          <Hero stats={stats} />
-        </div>
-      </div>
-      <div className="max-w-5xl mx-auto px-6">
-        <Problem />
-        <HowItWorks />
-        <Leaderboard rows={leaderboard} />
-        <Trust />
-        <Faq />
-        <FinalCta />
-        <Footer />
-      </div>
+    <div className="max-w-4xl mx-auto px-6">
+      <Nav />
+      <Hero stats={stats} />
+      <Problem />
+      <HowItWorks />
+      <Leaderboard rows={leaderboard} />
+      <Trust />
+      <Faq />
+      <FinalCta />
+      <Footer />
     </div>
   );
 }

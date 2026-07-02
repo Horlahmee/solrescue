@@ -27,7 +27,6 @@ export function Home({ feeWallet, feeBps }: HomeProps) {
   const cluster = getCluster();
 
   return (
-    <div className="bg-aurora-soft min-h-dvh">
     <main className="max-w-3xl mx-auto px-6 py-8 sm:py-12 flex flex-col gap-12 min-h-dvh">
       <header className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -85,7 +84,6 @@ export function Home({ feeWallet, feeBps }: HomeProps) {
         </span>
       </footer>
     </main>
-    </div>
   );
 }
 
