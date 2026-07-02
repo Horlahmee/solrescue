@@ -11,12 +11,12 @@ import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import { createClient } from '@supabase/supabase-js';
 import { MINT_SIZE, parseMintAccount } from '../lib/mintParser';
 import { createConnection } from '../lib/solana';
+import { withBackoff } from './lib/backoff';
 
 process.loadEnvFile('.env.local');
 
 const BATCH_SIZE = 100; // getMultipleAccounts limit per SPECS.md
 const ENRICH_THRESHOLD = 1_000_000_000n; // metadata only for excess ≥ 1 SOL
-const MAX_RETRIES = 5;
 
 interface MintRow {
   mint_address: string;
@@ -51,21 +51,6 @@ function readSeedAddresses(path: string): PublicKey[] {
     }
   }
   return keys;
-}
-
-async function withBackoff<T>(label: string, fn: () => Promise<T>): Promise<T> {
-  for (let attempt = 0; ; attempt++) {
-    try {
-      return await fn();
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      const retryable = message.includes('429') || message.includes('Too Many');
-      if (!retryable || attempt >= MAX_RETRIES) throw error;
-      const delayMs = 1_000 * 2 ** attempt;
-      console.warn(`${label}: rate limited, retrying in ${delayMs}ms`);
-      await new Promise((resolve) => setTimeout(resolve, delayMs));
-    }
-  }
 }
 
 async function fetchMetadata(
