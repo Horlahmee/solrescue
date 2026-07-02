@@ -115,38 +115,60 @@ async function main() {
   let pages = 0;
   let scanned = 0;
   let kept = 0;
+  let consecutiveFailures = 0;
+  const MAX_CONSECUTIVE_FAILURES = 20;
   const keepAbove = RENT_MINIMUM + DUST_THRESHOLD;
 
   do {
-    const page = await fetchPage(rpcUrl, cursor);
-    pages++;
-    scanned += page.accounts.length;
+    // The cursor only advances after a fully persisted page, so any failure
+    // here can simply retry the same page — upserts are idempotent. This
+    // outer loop rides out multi-minute network outages that would exhaust
+    // the per-call backoff.
+    try {
+      const page = await fetchPage(rpcUrl, cursor);
 
-    const rows = page.accounts
-      .filter((entry) => BigInt(entry.account.lamports) > keepAbove)
-      .map(toRow)
-      .filter((row) => row !== null);
+      const rows = page.accounts
+        .filter((entry) => BigInt(entry.account.lamports) > keepAbove)
+        .map(toRow)
+        .filter((row) => row !== null);
 
-    if (rows.length > 0) {
-      const { error } = await supabase
-        .from('mints')
-        .upsert(rows, { onConflict: 'mint_address' });
-      if (error) throw new Error(`supabase upsert failed: ${error.message}`);
-      kept += rows.length;
-    }
+      if (rows.length > 0) {
+        const { error } = await supabase
+          .from('mints')
+          .upsert(rows, { onConflict: 'mint_address' });
+        if (error) throw new Error(`supabase upsert failed: ${error.message}`);
+        kept += rows.length;
+      }
 
-    cursor = page.paginationKey;
-    const { error: stateError } = await supabase
-      .from('indexer_state')
-      .upsert({ id: 1, cursor, updated_at: new Date().toISOString() });
-    if (stateError) {
-      throw new Error(`cursor persist failed: ${stateError.message}`);
-    }
+      const { error: stateError } = await supabase
+        .from('indexer_state')
+        .upsert({
+          id: 1,
+          cursor: page.paginationKey,
+          updated_at: new Date().toISOString(),
+        });
+      if (stateError) {
+        throw new Error(`cursor persist failed: ${stateError.message}`);
+      }
 
-    if (pages % 10 === 0 || cursor === null) {
-      console.log(
-        `page ${pages}: ${scanned.toLocaleString()} scanned, ${kept.toLocaleString()} kept`,
+      cursor = page.paginationKey;
+      pages++;
+      scanned += page.accounts.length;
+      consecutiveFailures = 0;
+
+      if (pages % 10 === 0 || cursor === null) {
+        console.log(
+          `page ${pages}: ${scanned.toLocaleString()} scanned, ${kept.toLocaleString()} kept`,
+        );
+      }
+    } catch (error) {
+      consecutiveFailures++;
+      if (consecutiveFailures > MAX_CONSECUTIVE_FAILURES) throw error;
+      const message = error instanceof Error ? error.message : String(error);
+      console.warn(
+        `page attempt failed (${consecutiveFailures}/${MAX_CONSECUTIVE_FAILURES}): ${message} — retrying in 30s`,
       );
+      await new Promise((resolve) => setTimeout(resolve, 30_000));
     }
   } while (cursor !== null);
 
