@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { Connection, PublicKey } from '@solana/web3.js';
+import { Connection, PublicKey, SystemProgram } from '@solana/web3.js';
 import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import { createServiceClient } from '@/lib/supabaseAdmin';
 import { getRpcUrl } from '@/lib/solana';
@@ -56,15 +56,23 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'no lamports recovered' }, { status: 400 });
   }
 
+  // Fee comes from the SystemProgram.transfer instruction data (u32 tag 2 +
+  // u64 lamports LE) — balance deltas are ambiguous when the fee wallet plays
+  // another role in the same transaction (e.g. our own devnet tests).
   const feeWalletEnv = process.env.NEXT_PUBLIC_FEE_WALLET;
   let fee = 0n;
   if (feeWalletEnv) {
     const feeWallet = new PublicKey(feeWalletEnv);
-    const feeIndex = keys.findIndex((key) => key.equals(feeWallet));
-    if (feeIndex >= 0) {
-      fee =
-        BigInt(tx.meta.postBalances[feeIndex]) -
-        BigInt(tx.meta.preBalances[feeIndex]);
+    const transferIx = message.compiledInstructions.find(
+      (ix) =>
+        keys[ix.programIdIndex].equals(SystemProgram.programId) &&
+        ix.data.length === 12 &&
+        Buffer.from(ix.data).readUInt32LE(0) === 2 &&
+        ix.accountKeyIndexes.length >= 2 &&
+        keys[ix.accountKeyIndexes[1]].equals(feeWallet),
+    );
+    if (transferIx) {
+      fee = Buffer.from(transferIx.data).readBigUInt64LE(4);
     }
   }
 
