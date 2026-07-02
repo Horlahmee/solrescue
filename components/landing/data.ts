@@ -31,7 +31,11 @@ export async function fetchLandingStats(): Promise<LandingStats> {
   }
 }
 
-export async function fetchLeaderboard(): Promise<LeaderboardRow[]> {
+export const LEADERBOARD_LIMIT = 25;
+
+export async function fetchLeaderboard(
+  limit: number = LEADERBOARD_LIMIT,
+): Promise<LeaderboardRow[]> {
   try {
     const { data } = await createAnonClient()
       .from('mints')
@@ -39,7 +43,7 @@ export async function fetchLeaderboard(): Promise<LeaderboardRow[]> {
       .eq('authority_revoked', false)
       .gt('excess_lamports', 0)
       .order('excess_lamports', { ascending: false })
-      .limit(6);
+      .limit(limit);
     return (data as LeaderboardRow[]) ?? [];
   } catch {
     return [];

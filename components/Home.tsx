@@ -11,6 +11,7 @@ import { MintChecker } from "./MintChecker";
 import { StatsBar } from "./StatsBar";
 import { SuccessScreen, type RecoveryResult } from "./SuccessScreen";
 import { ThemeToggle } from "./ThemeToggle";
+import { TopMintsLive } from "./TopMintsLive";
 import { Skeleton } from "./ui";
 
 const GITHUB_URL = "https://github.com/Horlahmee/solrescue";
@@ -60,6 +61,7 @@ export function Home({ feeWallet, feeBps }: HomeProps) {
           <>
             <Hero />
             <MintChecker />
+            <TopMintsLive />
           </>
         )}
 
