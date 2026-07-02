@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { getRecovery } from "@/lib/recoveries";
+import { getRecovery, netLamports } from "@/lib/recoveries";
 import { formatSol } from "@/lib/formatSol";
 
 export const size = { width: 1200, height: 630 };
@@ -15,7 +15,7 @@ export default async function OgImage({
   const { sig } = await params;
   const recovery = await getRecovery(sig);
   const net = recovery
-    ? formatSol(BigInt(recovery.recovered_lamports - recovery.fee_lamports))
+    ? formatSol(netLamports(recovery))
     : "";
   const mint = recovery
     ? `${recovery.mint_address.slice(0, 4)}…${recovery.mint_address.slice(-4)}`

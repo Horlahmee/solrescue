@@ -8,7 +8,6 @@ import {
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
 import { SolflareWalletAdapter } from "@solana/wallet-adapter-solflare";
-import { CoinbaseWalletAdapter } from "@solana/wallet-adapter-coinbase";
 import { TrustWalletAdapter } from "@solana/wallet-adapter-trust";
 import { LedgerWalletAdapter } from "@solana/wallet-adapter-ledger";
 import { getRpcUrl } from "@/lib/solana";
@@ -23,7 +22,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
     () => [
       new PhantomWalletAdapter(),
       new SolflareWalletAdapter(),
-      new CoinbaseWalletAdapter(),
       new TrustWalletAdapter(),
       new LedgerWalletAdapter(),
     ],

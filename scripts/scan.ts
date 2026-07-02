@@ -18,7 +18,6 @@ import { withBackoff } from './lib/backoff';
 process.loadEnvFile('.env.local');
 
 const PAGE_LIMIT = 10_000;
-const RENT_MINIMUM = 1_461_600n; // rent-exempt floor for 82 bytes
 const DUST_THRESHOLD = BigInt(process.env.DUST_THRESHOLD ?? 50_000_000); // 0.05 SOL
 const TOKEN_PROGRAM = 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA';
 
@@ -77,7 +76,7 @@ async function fetchPage(
   });
 }
 
-function toRow(entry: PagedAccount) {
+function toRow(entry: PagedAccount, rentMinimum: number) {
   const slice = Buffer.from(entry.account.data[0], 'base64');
   if (slice.length !== 36) return null;
   const tag = slice.readUInt32LE(0);
@@ -89,9 +88,27 @@ function toRow(entry: PagedAccount) {
     authority,
     authority_revoked: tag === 0,
     lamports: entry.account.lamports,
-    excess_lamports: entry.account.lamports - Number(RENT_MINIMUM),
+    excess_lamports: entry.account.lamports - rentMinimum,
     last_scanned: new Date().toISOString(),
   };
+}
+
+async function fetchRentMinimum(rpcUrl: string): Promise<bigint> {
+  const response = await fetch(rpcUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      jsonrpc: '2.0',
+      id: 'rent',
+      method: 'getMinimumBalanceForRentExemption',
+      params: [82],
+    }),
+  });
+  const body = await response.json();
+  if (typeof body.result !== 'number') {
+    throw new Error(`unexpected rent response: ${JSON.stringify(body)}`);
+  }
+  return BigInt(body.result);
 }
 
 async function main() {
@@ -112,12 +129,15 @@ async function main() {
   let cursor: string | null = state?.cursor ?? null;
   if (cursor) console.log(`resuming from persisted cursor`);
 
+  const rentMinimum = await fetchRentMinimum(rpcUrl);
+  const rentMinimumNum = Number(rentMinimum);
+
   let pages = 0;
   let scanned = 0;
   let kept = 0;
   let consecutiveFailures = 0;
   const MAX_CONSECUTIVE_FAILURES = 20;
-  const keepAbove = RENT_MINIMUM + DUST_THRESHOLD;
+  const keepAbove = rentMinimum + DUST_THRESHOLD;
 
   do {
     // The cursor only advances after a fully persisted page, so any failure
@@ -129,7 +149,7 @@ async function main() {
 
       const rows = page.accounts
         .filter((entry) => BigInt(entry.account.lamports) > keepAbove)
-        .map(toRow)
+        .map((entry) => toRow(entry, rentMinimumNum))
         .filter((row) => row !== null);
 
       if (rows.length > 0) {

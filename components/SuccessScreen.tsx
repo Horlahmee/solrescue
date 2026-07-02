@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { ArrowUpRight, PartyPopper } from "lucide-react";
 import { formatSol } from "@/lib/formatSol";
 import { getCluster } from "@/lib/solana";
+import { analytics } from "@/lib/analytics";
 import { Address } from "./Address";
 import { Button } from "./ui";
 
@@ -92,6 +93,7 @@ export function SuccessScreen({ result, onDone }: SuccessScreenProps) {
           href={tweetUrl}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() => analytics.shareClicked()}
           className="nb-press inline-flex items-center justify-center h-11 px-5 rounded-md bg-ink text-surface font-bold text-sm border-2 border-ink shadow-[4px_4px_0_var(--color-teal)]"
         >
           Share on X

@@ -15,6 +15,8 @@ export function TopMintsLive() {
   const [rows, setRows] = useState<LeaderboardRow[] | null>(null);
 
   useEffect(() => {
+    // Swallow errors to an empty list — this is a secondary marketing widget,
+    // not the recovery path, so a DB hiccup just hides it rather than erroring.
     createAnonClient()
       .from("mints")
       .select(
@@ -24,7 +26,8 @@ export function TopMintsLive() {
       .gt("excess_lamports", 0)
       .order("excess_lamports", { ascending: false })
       .limit(LEADERBOARD_LIMIT)
-      .then(({ data }) => setRows((data as LeaderboardRow[]) ?? []));
+      .then(({ data }) => setRows((data as LeaderboardRow[]) ?? []))
+      .then(undefined, () => setRows([]));
   }, []);
 
   if (rows !== null && rows.length === 0) return null;

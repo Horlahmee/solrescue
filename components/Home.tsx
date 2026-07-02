@@ -12,6 +12,7 @@ import { StatsBar } from "./StatsBar";
 import { SuccessScreen, type RecoveryResult } from "./SuccessScreen";
 import { ThemeToggle } from "./ThemeToggle";
 import { TopMintsLive } from "./TopMintsLive";
+import { analytics } from "@/lib/analytics";
 import { Skeleton } from "./ui";
 
 const GITHUB_URL = "https://github.com/Horlahmee/solrescue";
@@ -24,9 +25,15 @@ interface HomeProps {
 }
 
 export function Home({ feeWallet, feeBps }: HomeProps) {
-  const { publicKey } = useWallet();
+  const { publicKey, wallet } = useWallet();
   const [success, setSuccess] = useState<RecoveryResult | null>(null);
   const cluster = getCluster();
+
+  useEffect(() => {
+    if (publicKey && wallet) {
+      analytics.walletConnected(wallet.adapter.name);
+    }
+  }, [publicKey, wallet]);
 
   return (
     <main className="max-w-3xl mx-auto px-6 py-8 sm:py-10 flex flex-col gap-10 min-h-dvh">
@@ -152,19 +159,37 @@ interface DashboardProps {
 
 function Dashboard({ owner, feeWallet, feeBps, onSuccess }: DashboardProps) {
   const [rows, setRows] = useState<MintRow[] | null>(null);
+  const [loadError, setLoadError] = useState(false);
   const [manual, setManual] = useState<MintRow[]>([]);
 
   useEffect(() => {
     setRows(null);
-    createAnonClient()
-      .from("mints")
-      .select(
-        "mint_address, authority, authority_revoked, lamports, excess_lamports, token_name, token_symbol",
-      )
-      .eq("authority", owner)
-      .gt("excess_lamports", 0)
-      .order("excess_lamports", { ascending: false })
-      .then(({ data }) => setRows((data as MintRow[]) ?? []));
+    setLoadError(false);
+    // Supabase resolves (not rejects) with {error} on failure — distinguish a
+    // real empty result from a lookup failure so we never falsely tell a user
+    // they have nothing. The manual checker still works either way.
+    const run = async () => {
+      try {
+        const { data, error } = await createAnonClient()
+          .from("mints")
+          .select(
+            "mint_address, authority, authority_revoked, lamports, excess_lamports, token_name, token_symbol",
+          )
+          .eq("authority", owner)
+          .gt("excess_lamports", 0)
+          .order("excess_lamports", { ascending: false });
+        if (error) {
+          setLoadError(true);
+          setRows([]);
+        } else {
+          setRows((data as MintRow[]) ?? []);
+        }
+      } catch {
+        setLoadError(true);
+        setRows([]);
+      }
+    };
+    void run();
   }, [owner]);
 
   // Manual RPC check covers gaps in the index (SPECS.md §3.3 state 2).
@@ -214,14 +239,18 @@ function Dashboard({ owner, feeWallet, feeBps, onSuccess }: DashboardProps) {
     <section className="flex flex-col gap-6 animate-fade-up">
       <div>
         <h2 className="font-display font-bold text-2xl sm:text-3xl">
-          {merged.length === 0
-            ? "No recoverable mints in our index"
-            : `${merged.length} recoverable mint${merged.length > 1 ? "s" : ""} found`}
+          {loadError && merged.length === 0
+            ? "Couldn’t load your mints"
+            : merged.length === 0
+              ? "No recoverable mints in our index"
+              : `${merged.length} recoverable mint${merged.length > 1 ? "s" : ""} found`}
         </h2>
         <p className="text-sm text-muted mt-1.5">
-          {merged.length === 0
-            ? "Our index may lag the chain — paste a mint address below to check it directly."
-            : "Figures re-verify against the chain the moment you hit Recover."}
+          {loadError && merged.length === 0
+            ? "Our index is temporarily unreachable — you can still paste a mint address below to check it directly on-chain."
+            : merged.length === 0
+              ? "Our index may lag the chain — paste a mint address below to check it directly."
+              : "Figures re-verify against the chain the moment you hit Recover."}
         </p>
       </div>
 

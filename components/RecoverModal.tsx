@@ -2,12 +2,13 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { PublicKey } from "@solana/web3.js";
+import { PublicKey, VersionedTransaction } from "@solana/web3.js";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { ArrowDown, ShieldCheck, TriangleAlert, X } from "lucide-react";
 import { buildRecoveryTx, type RecoveryQuote } from "@/lib/recovery";
 import { RecoveryError } from "@/lib/errors";
 import { formatSol } from "@/lib/formatSol";
+import { analytics } from "@/lib/analytics";
 import { Button, Spinner } from "./ui";
 import { Address } from "./Address";
 import type { RecoveryResult } from "./SuccessScreen";
@@ -67,8 +68,9 @@ export function RecoverModal({
   }, [connection, publicKey, mintAddress, feeWallet, feeBps]);
 
   useEffect(() => {
+    analytics.recoverOpened(mintAddress);
     void verify();
-  }, [verify]);
+  }, [verify, mintAddress]);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -80,14 +82,18 @@ export function RecoverModal({
 
   const sign = async (readyQuote: RecoveryQuote) => {
     setStage({ step: "signing", quote: readyQuote });
+    analytics.recoverSigned(mintAddress);
     try {
       // The quote's blockhash may be minutes old by the time the user signs —
       // blockhashes expire in ~60-90s, so stamp a fresh one right before
       // sending and confirm against that same validity window.
       const { blockhash, lastValidBlockHeight } =
         await connection.getLatestBlockhash();
-      readyQuote.tx.message.recentBlockhash = blockhash;
-      const signature = await sendTransaction(readyQuote.tx, connection);
+      // Clone rather than mutate the quote held in React state, so a retry
+      // rebuilds cleanly instead of reusing a half-mutated transaction.
+      const tx = VersionedTransaction.deserialize(readyQuote.tx.serialize());
+      tx.message.recentBlockhash = blockhash;
+      const signature = await sendTransaction(tx, connection);
       setStage({ step: "confirming", signature });
       const confirmation = await connection.confirmTransaction({
         signature,
@@ -99,6 +105,7 @@ export function RecoverModal({
           `transaction failed on-chain: ${JSON.stringify(confirmation.value.err)}`,
         );
       }
+      analytics.recoverSucceeded(mintAddress, formatSol(readyQuote.net));
       onSuccess({
         signature,
         mintAddress,
@@ -107,7 +114,9 @@ export function RecoverModal({
         net: readyQuote.net,
       });
     } catch (error: unknown) {
-      setStage({ step: "error", message: toUserMessage(error) });
+      const message = toUserMessage(error);
+      analytics.recoverFailed(message);
+      setStage({ step: "error", message });
     }
   };
 
@@ -157,7 +166,7 @@ export function RecoverModal({
 
         {stage.step === "ready" && (
           <div className="flex flex-col gap-4 animate-fade-up">
-            <QuoteBreakdown quote={stage.quote} />
+            <QuoteBreakdown quote={stage.quote} feeBps={feeBps} />
             <div className="flex items-start gap-2 text-xs border-2 border-ink bg-surface-2 rounded-md p-3">
               <ShieldCheck className="size-4 shrink-0 mt-0.5" />
               <span>
@@ -230,12 +239,21 @@ function StageShell({ children }: { children: React.ReactNode }) {
   );
 }
 
-function QuoteBreakdown({ quote }: { quote: RecoveryQuote }) {
+function QuoteBreakdown({
+  quote,
+  feeBps,
+}: {
+  quote: RecoveryQuote;
+  feeBps: number;
+}) {
+  // Derive the percentage from the actual feeBps so the label can never drift
+  // from the deducted amount.
+  const pct = (feeBps / 100).toFixed(feeBps % 100 === 0 ? 0 : 1);
   return (
     <div className="border-2 border-ink rounded-md overflow-hidden">
       <Row label="Stuck in the mint" value={`${formatSol(quote.excess)} SOL`} />
       <Row
-        label="Service fee (10%)"
+        label={`Service fee (${pct}%)`}
         value={`− ${formatSol(quote.fee)} SOL`}
         muted
       />

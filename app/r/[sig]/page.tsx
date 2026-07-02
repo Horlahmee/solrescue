@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getRecovery } from "@/lib/recoveries";
+import { getRecovery, netLamports } from "@/lib/recoveries";
 import { formatSol } from "@/lib/formatSol";
 
 export async function generateMetadata({
@@ -13,7 +13,7 @@ export async function generateMetadata({
   const recovery = await getRecovery(sig);
   if (!recovery) return { title: "SolRescue" };
   const net = formatSol(
-    BigInt(recovery.recovered_lamports - recovery.fee_lamports),
+    netLamports(recovery),
   );
   return {
     title: `${net} SOL recovered — SolRescue`,
@@ -32,7 +32,7 @@ export default async function SharePage({
   const recovery = await getRecovery(sig);
   if (!recovery) notFound();
 
-  const net = BigInt(recovery.recovered_lamports - recovery.fee_lamports);
+  const net = netLamports(recovery);
   const short = `${recovery.mint_address.slice(0, 4)}…${recovery.mint_address.slice(-4)}`;
 
   return (

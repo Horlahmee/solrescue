@@ -18,7 +18,11 @@ function requireEnv(name: string): string {
 }
 
 function csvField(value: string | number | null): string {
-  const s = String(value ?? '');
+  let s = String(value ?? '');
+  // Token names/symbols are attacker-controlled on-chain metadata. Neutralize
+  // CSV formula injection (=cmd, +, -, @, tab, CR) so opening leads.csv in a
+  // spreadsheet can't execute anything — prefix a single quote.
+  if (/^[=+\-@\t\r]/.test(s)) s = `'${s}`;
   return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 }
 

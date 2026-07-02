@@ -15,7 +15,6 @@
   "dependencies": {
     "@solana/spl-token": "^0.4.14",
     "@solana/wallet-adapter-base": "^0.9.27",
-    "@solana/wallet-adapter-coinbase": "^0.1.23",
     "@solana/wallet-adapter-ledger": "^0.9.29",
     "@solana/wallet-adapter-phantom": "^0.9.29",
     "@solana/wallet-adapter-react": "^0.15.39",
@@ -24,6 +23,8 @@
     "@solana/wallet-adapter-trust": "^0.1.17",
     "@solana/web3.js": "^1.98.4",
     "@supabase/supabase-js": "^2.110.0",
+    "@vercel/analytics": "^2.0.1",
+    "@vercel/speed-insights": "^2.0.0",
     "lucide-react": "^1.23.0",
     "next": "15.5.20",
     "react": "19.1.0",

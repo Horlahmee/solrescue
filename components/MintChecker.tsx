@@ -6,6 +6,7 @@ import { useConnection } from "@solana/wallet-adapter-react";
 import { CircleCheck, Info, ShieldAlert } from "lucide-react";
 import { checkMint, type MintStatus } from "@/lib/checkMint";
 import { formatSol } from "@/lib/formatSol";
+import { analytics } from "@/lib/analytics";
 import { Button } from "./ui";
 
 type CheckState =
@@ -36,6 +37,7 @@ export function MintChecker({ onRecoverable }: MintCheckerProps) {
     setState({ phase: "checking" });
     try {
       const status = await checkMint(connection, mint);
+      analytics.mintChecked(status.kind);
       setState({ phase: "done", status, address: mint.toBase58() });
       if (status.kind === "recoverable" && onRecoverable) {
         onRecoverable(mint.toBase58(), status.authority, status.excess);
