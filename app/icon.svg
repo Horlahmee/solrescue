@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- hard offset shadow, then the teal block — the SolRescue neubrutalist mark -->
+  <rect x="12" y="12" width="46" height="46" rx="7" fill="#14130f"/>
+  <rect x="4" y="4" width="46" height="46" rx="7" fill="#00e5c3" stroke="#14130f" stroke-width="4.5"/>
+  <text x="27" y="43" font-family="'Arial Black', 'Segoe UI', Arial, sans-serif" font-size="35" font-weight="900" text-anchor="middle" fill="#14130f">S</text>
+</svg>
