@@ -1,12 +1,14 @@
 {
-  "name": "temp-app",
+  "name": "solrescue",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "vitest run",
+    "test:devnet": "tsx scripts/m0-devnet-test.ts"
   },
   "dependencies": {
     "@solana/spl-token": "^0.4.14",
@@ -31,6 +33,7 @@
     "eslint-config-next": "15.5.20",
     "tailwindcss": "^4",
     "tsx": "^4.22.4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.9"
   }
 }
