@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { createAnonClient } from "@/lib/supabaseClient";
 import { formatSol } from "@/lib/formatSol";
+import { Skeleton } from "./ui";
 
 interface Stats {
   total_recoverable_lamports: number;
@@ -24,23 +25,33 @@ export function StatsBar() {
       });
   }, []);
 
-  if (!stats) return null;
-
-  const items: Array<[string, string]> = [
+  const items: Array<[string, string | null]> = [
     [
       "recoverable SOL indexed",
-      formatSol(BigInt(stats.total_recoverable_lamports)),
+      stats ? formatSol(BigInt(stats.total_recoverable_lamports)) : null,
     ],
-    ["mints with stuck SOL", stats.recoverable_mints.toLocaleString()],
-    ["SOL recovered", formatSol(BigInt(stats.total_recovered_lamports))],
-    ["recoveries", stats.total_recoveries.toLocaleString()],
+    [
+      "mints with stuck SOL",
+      stats ? stats.recoverable_mints.toLocaleString() : null,
+    ],
+    [
+      "SOL recovered",
+      stats ? formatSol(BigInt(stats.total_recovered_lamports)) : null,
+    ],
+    ["recoveries", stats ? stats.total_recoveries.toLocaleString() : null],
   ];
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-edge border border-edge rounded-lg overflow-hidden">
+    <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-edge border border-edge rounded-xl overflow-hidden">
       {items.map(([label, value]) => (
-        <div key={label} className="bg-surface px-4 py-3">
-          <div className="font-mono text-lg text-teal">{value}</div>
+        <div key={label} className="bg-surface px-4 py-3.5">
+          {value === null ? (
+            <Skeleton className="h-6 w-16" />
+          ) : (
+            <div className="font-mono text-lg text-teal animate-fade-in">
+              {value}
+            </div>
+          )}
           <div className="text-xs text-muted mt-1">{label}</div>
         </div>
       ))}

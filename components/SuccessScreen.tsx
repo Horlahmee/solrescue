@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect } from "react";
+import { ArrowUpRight, CircleCheck } from "lucide-react";
 import { formatSol } from "@/lib/formatSol";
 import { getCluster } from "@/lib/solana";
 import { Address } from "./Address";
+import { Button } from "./ui";
 
 export interface RecoveryResult {
   signature: string;
@@ -38,39 +40,56 @@ export function SuccessScreen({ result, onDone }: SuccessScreenProps) {
   }, [result.signature]);
 
   return (
-    <div className="border border-teal/50 rounded-lg bg-surface p-8 text-center flex flex-col items-center gap-4">
-      <div className="font-display text-3xl text-teal">
-        {formatSol(result.net)} SOL recovered
+    <section className="border border-teal/40 rounded-2xl bg-surface p-10 flex flex-col items-center gap-5 animate-fade-up">
+      <CircleCheck className="size-14 text-teal animate-pop" aria-hidden />
+      <div className="text-center">
+        <div className="font-display text-4xl">
+          <span className="font-mono text-teal">{formatSol(result.net)}</span>{" "}
+          SOL recovered
+        </div>
+        <div className="text-sm text-muted mt-2">
+          It’s already in your wallet.
+        </div>
       </div>
-      <div className="text-sm text-muted">
-        from mint <Address value={result.mintAddress} /> · fee{" "}
-        <span className="font-mono">{formatSol(result.fee)} SOL</span>
+
+      <div className="w-full max-w-sm rounded-xl border border-edge overflow-hidden text-sm">
+        <div className="flex justify-between px-4 py-2.5 bg-surface-2">
+          <span className="text-muted">From mint</span>
+          <Address value={result.mintAddress} />
+        </div>
+        <div className="flex justify-between px-4 py-2.5 bg-surface-2 border-t border-edge">
+          <span className="text-muted">Recovered</span>
+          <span className="font-mono">{formatSol(result.excess)} SOL</span>
+        </div>
+        <div className="flex justify-between px-4 py-2.5 bg-surface-2 border-t border-edge">
+          <span className="text-muted">Fee</span>
+          <span className="font-mono">{formatSol(result.fee)} SOL</span>
+        </div>
       </div>
+
       <a
         href={solscanUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="font-mono text-sm text-teal underline underline-offset-4"
+        className="inline-flex items-center gap-1 font-mono text-sm text-teal hover:underline underline-offset-4"
       >
         View transaction on Solscan
+        <ArrowUpRight className="size-3.5" aria-hidden />
       </a>
-      <div className="flex gap-3 mt-2">
+
+      <div className="flex gap-3 mt-1">
         <a
           href={`https://twitter.com/intent/tweet?text=${shareText}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="px-4 py-2 rounded-md bg-teal text-[#05261f] font-semibold text-sm"
+          className="inline-flex items-center justify-center h-10 px-4 rounded-lg bg-teal text-[#05261f] font-semibold text-sm hover:brightness-110 transition-all"
         >
           Share on X
         </a>
-        <button
-          type="button"
-          onClick={onDone}
-          className="px-4 py-2 rounded-md border border-edge text-sm cursor-pointer"
-        >
-          Back
-        </button>
+        <Button variant="ghost" onClick={onDone}>
+          Back to my mints
+        </Button>
       </div>
-    </div>
+    </section>
   );
 }

@@ -4,10 +4,12 @@ import { useCallback, useEffect, useState } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { createAnonClient, type MintRow } from "@/lib/supabaseClient";
+import { getCluster } from "@/lib/solana";
 import { MintCard } from "./MintCard";
 import { MintChecker } from "./MintChecker";
 import { StatsBar } from "./StatsBar";
 import { SuccessScreen, type RecoveryResult } from "./SuccessScreen";
+import { Skeleton } from "./ui";
 
 const GITHUB_URL = "https://github.com/Horlahmee/solrescue";
 const SIMD_URL =
@@ -21,40 +23,62 @@ interface HomeProps {
 export function Home({ feeWallet, feeBps }: HomeProps) {
   const { publicKey } = useWallet();
   const [success, setSuccess] = useState<RecoveryResult | null>(null);
+  const cluster = getCluster();
 
   return (
-    <main className="max-w-3xl mx-auto px-6 py-10 flex flex-col gap-10">
+    <main className="max-w-3xl mx-auto px-6 py-8 sm:py-12 flex flex-col gap-12 min-h-dvh">
       <header className="flex items-center justify-between">
-        <div className="font-display text-xl">
-          Sol<span className="text-teal">Rescue</span>
+        <div className="flex items-center gap-3">
+          <div className="font-display text-xl tracking-tight">
+            Sol<span className="text-teal">Rescue</span>
+          </div>
+          {cluster === "devnet" && (
+            <span className="font-mono text-[11px] uppercase tracking-wider text-amber border border-amber/40 rounded-full px-2 py-0.5">
+              devnet
+            </span>
+          )}
         </div>
         <WalletMultiButton />
       </header>
 
-      {success ? (
-        <SuccessScreen result={success} onDone={() => setSuccess(null)} />
-      ) : publicKey ? (
-        <Dashboard
-          owner={publicKey.toBase58()}
-          feeWallet={feeWallet}
-          feeBps={feeBps}
-          onSuccess={setSuccess}
-        />
-      ) : (
-        <Hero />
-      )}
+      <div className="flex-1 flex flex-col gap-12">
+        {success ? (
+          <SuccessScreen result={success} onDone={() => setSuccess(null)} />
+        ) : publicKey ? (
+          <Dashboard
+            owner={publicKey.toBase58()}
+            feeWallet={feeWallet}
+            feeBps={feeBps}
+            onSuccess={setSuccess}
+          />
+        ) : (
+          <>
+            <Hero />
+            <MintChecker />
+          </>
+        )}
 
-      <StatsBar />
-      {!publicKey && <MintChecker />}
+        <StatsBar />
+      </div>
 
-      <footer className="flex gap-6 text-sm text-muted border-t border-edge pt-6">
-        <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer" className="hover:text-teal">
+      <footer className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted border-t border-edge pt-6">
+        <a
+          href={GITHUB_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hover:text-teal transition-colors"
+        >
           Source code (MIT)
         </a>
-        <a href={SIMD_URL} target="_blank" rel="noopener noreferrer" className="hover:text-teal">
+        <a
+          href={SIMD_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hover:text-teal transition-colors"
+        >
           SIMD-0266
         </a>
-        <span className="ml-auto">
+        <span className="sm:ml-auto">
           Non-custodial. Your keys never leave your wallet.
         </span>
       </footer>
@@ -64,27 +88,32 @@ export function Home({ feeWallet, feeBps }: HomeProps) {
 
 function Hero() {
   return (
-    <section className="flex flex-col gap-6">
-      <h1 className="font-display text-4xl leading-tight">
-        SOL stuck in a mint account?
-        <br />
-        <span className="text-teal">Get it back in one click.</span>
-      </h1>
-      <p className="text-muted max-w-xl">
-        The p-token upgrade made SOL mistakenly sent to token mint addresses
-        recoverable — if you’re the mint authority. Connect your wallet to see
-        what’s yours. You sign one transaction; we never touch your keys.
-      </p>
+    <section className="flex flex-col gap-8 animate-fade-up">
+      <div className="flex flex-col gap-4">
+        <h1 className="font-display text-4xl sm:text-5xl leading-[1.15] tracking-tight">
+          SOL stuck in a mint account?
+          <br />
+          <span className="text-teal">Get it back in one click.</span>
+        </h1>
+        <p className="text-muted max-w-xl leading-relaxed">
+          The p-token upgrade made SOL mistakenly sent to token mint addresses
+          recoverable — if you’re the mint authority. Connect your wallet to
+          see what’s yours. You sign one transaction; we never touch your keys.
+        </p>
+      </div>
       <ol className="grid sm:grid-cols-3 gap-4">
         {[
           ["Connect", "We look up mints where your wallet is the authority."],
           ["Verify", "Exact figures, simulated on-chain before you sign."],
           ["Recover", "SOL lands in your wallet. 10% fee, same transaction."],
         ].map(([title, body], i) => (
-          <li key={title} className="border border-edge rounded-lg bg-surface p-4">
-            <div className="font-mono text-teal text-xs mb-2">0{i + 1}</div>
-            <div className="font-display mb-1">{title}</div>
-            <div className="text-sm text-muted">{body}</div>
+          <li
+            key={title}
+            className="border border-edge rounded-xl bg-surface p-5"
+          >
+            <div className="font-mono text-teal text-xs mb-3">0{i + 1}</div>
+            <div className="font-display mb-1.5">{title}</div>
+            <div className="text-sm text-muted leading-relaxed">{body}</div>
           </li>
         ))}
       </ol>
@@ -104,6 +133,7 @@ function Dashboard({ owner, feeWallet, feeBps, onSuccess }: DashboardProps) {
   const [manual, setManual] = useState<MintRow[]>([]);
 
   useEffect(() => {
+    setRows(null);
     createAnonClient()
       .from("mints")
       .select(
@@ -139,43 +169,57 @@ function Dashboard({ owner, feeWallet, feeBps, onSuccess }: DashboardProps) {
     [owner],
   );
 
-  const indexed = rows ?? [];
+  if (rows === null) {
+    return (
+      <section className="flex flex-col gap-6" aria-busy>
+        <Skeleton className="h-8 w-64" />
+        <div className="grid sm:grid-cols-2 gap-4">
+          <Skeleton className="h-44 rounded-xl" />
+          <Skeleton className="h-44 rounded-xl" />
+        </div>
+      </section>
+    );
+  }
+
   const merged = [
-    ...indexed,
+    ...rows,
     ...manual.filter(
-      (m) => !indexed.some((row) => row.mint_address === m.mint_address),
+      (m) => !rows.some((row) => row.mint_address === m.mint_address),
     ),
   ];
 
   return (
-    <section className="flex flex-col gap-6">
-      <h2 className="font-display text-2xl">
-        {rows === null
-          ? "Looking up your mints…"
-          : merged.length === 0
-            ? "No recoverable mints found for this wallet"
+    <section className="flex flex-col gap-6 animate-fade-up">
+      <div>
+        <h2 className="font-display text-2xl">
+          {merged.length === 0
+            ? "No recoverable mints in our index"
             : `${merged.length} recoverable mint${merged.length > 1 ? "s" : ""} found`}
-      </h2>
-      {merged.length === 0 && rows !== null && (
-        <p className="text-sm text-muted">
-          Our index may lag the chain — paste a mint address below to check it
-          directly.
+        </h2>
+        <p className="text-sm text-muted mt-1.5">
+          {merged.length === 0
+            ? "Our index may lag the chain — paste a mint address below to check it directly."
+            : "Figures re-verify against the chain the moment you hit Recover."}
         </p>
-      )}
-      <div className="grid sm:grid-cols-2 gap-4">
-        {merged.map((row) => (
-          <MintCard
-            key={row.mint_address}
-            mintAddress={row.mint_address}
-            tokenName={row.token_name}
-            tokenSymbol={row.token_symbol}
-            indexedExcess={BigInt(row.excess_lamports)}
-            feeWallet={feeWallet}
-            feeBps={feeBps}
-            onSuccess={onSuccess}
-          />
-        ))}
       </div>
+
+      {merged.length > 0 && (
+        <div className="grid sm:grid-cols-2 gap-4">
+          {merged.map((row) => (
+            <MintCard
+              key={row.mint_address}
+              mintAddress={row.mint_address}
+              tokenName={row.token_name}
+              tokenSymbol={row.token_symbol}
+              indexedExcess={BigInt(row.excess_lamports)}
+              feeWallet={feeWallet}
+              feeBps={feeBps}
+              onSuccess={onSuccess}
+            />
+          ))}
+        </div>
+      )}
+
       <MintChecker onRecoverable={addManual} />
     </section>
   );
