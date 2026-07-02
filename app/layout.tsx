@@ -11,6 +11,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://solrescue.techgeniehq.com"),
   title: "SolRescue — recover SOL stuck in mint accounts",
   description:
     "Non-custodial recovery of SOL stranded in Solana mint accounts. Connect your wallet, see exactly what you get back, sign one transaction. Keys never leave your wallet.",

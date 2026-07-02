@@ -25,9 +25,16 @@ export function SuccessScreen({ result, onDone }: SuccessScreenProps) {
   const solscanUrl = `https://solscan.io/tx/${result.signature}${
     cluster === "devnet" ? "?cluster=devnet" : ""
   }`;
+  // The /r/<sig> link unfurls into a dynamic image card on X (intent URLs
+  // can't attach images directly — a rich link preview is the mechanism).
+  const shareUrl =
+    typeof window !== "undefined"
+      ? `${window.location.origin}/r/${result.signature}`
+      : `https://solrescue.techgeniehq.com/r/${result.signature}`;
   const shareText = encodeURIComponent(
-    `Just recovered ${formatSol(result.net)} SOL that was stuck in a mint account, in one click — non-custodial, open source. solrescue.techgeniehq.com`,
+    `Just recovered ${formatSol(result.net)} SOL that was stuck in a mint account, in one click — non-custodial, open source.`,
   );
+  const tweetUrl = `https://twitter.com/intent/tweet?text=${shareText}&url=${encodeURIComponent(shareUrl)}`;
 
   useEffect(() => {
     // Fire-and-forget: the API route re-verifies everything on-chain before
@@ -82,7 +89,7 @@ export function SuccessScreen({ result, onDone }: SuccessScreenProps) {
 
       <div className="flex flex-wrap justify-center gap-4 mt-1">
         <a
-          href={`https://twitter.com/intent/tweet?text=${shareText}`}
+          href={tweetUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="nb-press inline-flex items-center justify-center h-11 px-5 rounded-md bg-ink text-surface font-bold text-sm border-2 border-ink shadow-[4px_4px_0_var(--color-teal)]"
