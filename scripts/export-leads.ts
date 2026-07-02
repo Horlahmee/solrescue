@@ -6,6 +6,7 @@
  * Usage: npx tsx scripts/export-leads.ts [count]   (default 100)
  */
 import { writeFileSync } from 'node:fs';
+import { PublicKey } from '@solana/web3.js';
 import { createClient } from '@supabase/supabase-js';
 
 process.loadEnvFile('.env.local');
@@ -51,6 +52,7 @@ async function main() {
     'token_symbol',
     'mint_address',
     'authority',
+    'authority_type',
     'mint_solscan',
     'authority_solscan',
     'metadata_uri',
@@ -69,6 +71,9 @@ async function main() {
       csvField(row.token_symbol),
       row.mint_address,
       row.authority,
+      PublicKey.isOnCurve(new PublicKey(row.authority).toBytes())
+        ? 'wallet'
+        : 'pda',
       `https://solscan.io/account/${row.mint_address}`,
       `https://solscan.io/account/${row.authority}`,
       csvField(row.metadata_uri),
