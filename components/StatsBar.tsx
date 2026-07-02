@@ -25,30 +25,37 @@ export function StatsBar() {
       });
   }, []);
 
-  const items: Array<[string, string | null]> = [
+  const items: Array<[string, string | null, string]> = [
     [
       "recoverable SOL indexed",
       stats ? formatSol(BigInt(stats.total_recoverable_lamports)) : null,
+      "text-teal",
     ],
     [
       "mints with stuck SOL",
       stats ? stats.recoverable_mints.toLocaleString() : null,
+      "text-violet",
     ],
     [
       "SOL recovered",
       stats ? formatSol(BigInt(stats.total_recovered_lamports)) : null,
+      "text-teal",
     ],
-    ["recoveries", stats ? stats.total_recoveries.toLocaleString() : null],
+    [
+      "recoveries",
+      stats ? stats.total_recoveries.toLocaleString() : null,
+      "text-amber",
+    ],
   ];
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-edge border border-edge rounded-xl overflow-hidden">
-      {items.map(([label, value]) => (
+      {items.map(([label, value, tone]) => (
         <div key={label} className="bg-surface px-4 py-3.5">
           {value === null ? (
             <Skeleton className="h-6 w-16" />
           ) : (
-            <div className="font-mono text-lg text-teal animate-fade-in">
+            <div className={`font-mono text-lg animate-fade-in ${tone}`}>
               {value}
             </div>
           )}

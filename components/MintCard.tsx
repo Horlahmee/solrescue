@@ -38,7 +38,7 @@ export function MintCard({
       : (tokenName ?? tokenSymbol ?? null);
 
   return (
-    <div className="group border border-edge hover:border-edge-2 transition-colors rounded-xl bg-surface p-5 flex flex-col gap-4 animate-fade-up">
+    <div className="card-hover border border-edge rounded-xl bg-surface p-5 flex flex-col gap-4 animate-fade-up">
       <div className="flex items-center justify-between gap-2">
         <div className="font-display truncate">
           {label ?? <Address value={mintAddress} />}

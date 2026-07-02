@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
@@ -26,12 +27,13 @@ export function Home({ feeWallet, feeBps }: HomeProps) {
   const cluster = getCluster();
 
   return (
+    <div className="bg-aurora-soft min-h-dvh">
     <main className="max-w-3xl mx-auto px-6 py-8 sm:py-12 flex flex-col gap-12 min-h-dvh">
       <header className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="font-display text-xl tracking-tight">
+          <Link href="/" className="font-display text-xl tracking-tight">
             Sol<span className="text-teal">Rescue</span>
-          </div>
+          </Link>
           {cluster === "devnet" && (
             <span className="font-mono text-[11px] uppercase tracking-wider text-amber border border-amber/40 rounded-full px-2 py-0.5">
               devnet
@@ -83,6 +85,7 @@ export function Home({ feeWallet, feeBps }: HomeProps) {
         </span>
       </footer>
     </main>
+    </div>
   );
 }
 
