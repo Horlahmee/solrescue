@@ -39,3 +39,15 @@ create policy "anon read mints" on mints for select using (true);
 
 drop policy if exists "anon read recoveries" on recoveries;
 create policy "anon read recoveries" on recoveries for select using (true);
+
+-- Aggregate stats for the landing-page stats bar (anon-readable).
+create or replace view stats as
+select
+  (select coalesce(sum(excess_lamports), 0) from mints
+     where excess_lamports > 0 and not authority_revoked) as total_recoverable_lamports,
+  (select count(*) from mints
+     where excess_lamports > 0 and not authority_revoked) as recoverable_mints,
+  (select coalesce(sum(recovered_lamports), 0) from recoveries) as total_recovered_lamports,
+  (select count(*) from recoveries) as total_recoveries;
+
+grant select on stats to anon;
