@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
-    "test:devnet": "tsx scripts/m0-devnet-test.ts"
+    "test:devnet": "tsx scripts/m0-devnet-test.ts",
+    "index": "tsx scripts/indexer.ts"
   },
   "dependencies": {
     "@solana/spl-token": "^0.4.14",
