@@ -197,4 +197,5 @@ section[id] {
 }
 .wallet-adapter-modal-overlay {
   background: rgb(0 0 0 / 0.5) !important;
+  backdrop-filter: blur(4px);
 }

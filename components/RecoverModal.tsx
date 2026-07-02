@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { PublicKey } from "@solana/web3.js";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { ArrowDown, ShieldCheck, TriangleAlert, X } from "lucide-react";
@@ -101,9 +102,11 @@ export function RecoverModal({
     }
   };
 
-  return (
+  // Portal to <body>: ancestor cards animate with CSS transforms, which
+  // would otherwise trap this fixed overlay in their stacking context.
+  return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in"
       onClick={() => !busy && onClose()}
       role="dialog"
       aria-modal="true"
@@ -205,7 +208,8 @@ export function RecoverModal({
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 

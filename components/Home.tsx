@@ -30,7 +30,7 @@ export function Home({ feeWallet, feeBps }: HomeProps) {
 
   return (
     <main className="max-w-3xl mx-auto px-6 py-8 sm:py-10 flex flex-col gap-10 min-h-dvh">
-      <header className="flex items-center justify-between">
+      <header className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <Link href="/" className="font-display font-bold text-lg tracking-tight">
             Sol<span className="bg-teal px-1 border-2 border-ink">Rescue</span>
@@ -41,10 +41,24 @@ export function Home({ feeWallet, feeBps }: HomeProps) {
             </span>
           )}
         </div>
-        <div className="flex items-center gap-3">
+        <nav className="flex items-center gap-4">
+          <Link
+            href="/"
+            className="hidden sm:inline text-sm font-semibold hover:underline underline-offset-4 decoration-2"
+          >
+            Home
+          </Link>
+          <a
+            href="https://github.com/Horlahmee/solrescue"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden sm:inline text-sm font-semibold hover:underline underline-offset-4 decoration-2"
+          >
+            Source
+          </a>
           <ThemeToggle />
           <WalletMultiButton />
-        </div>
+        </nav>
       </header>
 
       <div className="flex-1 flex flex-col gap-10">
