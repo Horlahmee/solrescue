@@ -81,15 +81,24 @@ export function RecoverModal({
   const sign = async (readyQuote: RecoveryQuote) => {
     setStage({ step: "signing", quote: readyQuote });
     try {
-      const signature = await sendTransaction(readyQuote.tx, connection);
-      setStage({ step: "confirming", signature });
+      // The quote's blockhash may be minutes old by the time the user signs —
+      // blockhashes expire in ~60-90s, so stamp a fresh one right before
+      // sending and confirm against that same validity window.
       const { blockhash, lastValidBlockHeight } =
         await connection.getLatestBlockhash();
-      await connection.confirmTransaction({
+      readyQuote.tx.message.recentBlockhash = blockhash;
+      const signature = await sendTransaction(readyQuote.tx, connection);
+      setStage({ step: "confirming", signature });
+      const confirmation = await connection.confirmTransaction({
         signature,
         blockhash,
         lastValidBlockHeight,
       });
+      if (confirmation.value.err) {
+        throw new Error(
+          `transaction failed on-chain: ${JSON.stringify(confirmation.value.err)}`,
+        );
+      }
       onSuccess({
         signature,
         mintAddress,
@@ -266,6 +275,15 @@ function toUserMessage(error: unknown): string {
   if (error instanceof RecoveryError) return error.userMessage;
   if (error instanceof Error && /user rejected/i.test(error.message)) {
     return "You dismissed the signature request — nothing was sent.";
+  }
+  if (
+    error instanceof Error &&
+    /block height exceeded|expired/i.test(error.message)
+  ) {
+    return "The network didn’t confirm in time and the transaction expired. Your funds are safe — try again.";
+  }
+  if (error instanceof Error && /failed on-chain/.test(error.message)) {
+    return "The transaction was rejected on-chain. Nothing was transferred — try again.";
   }
   return "Something went wrong before anything was sent. Try again.";
 }
