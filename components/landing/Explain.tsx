@@ -78,10 +78,10 @@ export function HowItWorks() {
       </ol>
 
       <div className="nb rounded-lg overflow-hidden">
-        <div className="bg-ink text-surface px-6 py-3 font-mono text-xs uppercase tracking-wider font-bold">
+        <div className="bg-terminal text-terminal-ink px-6 py-3 font-mono text-xs uppercase tracking-wider font-bold">
           What you sign — exactly two instructions
         </div>
-        <div className="bg-ink text-surface px-6 pb-5 font-mono text-xs sm:text-sm leading-loose">
+        <div className="bg-terminal text-terminal-ink px-6 pb-5 font-mono text-xs sm:text-sm leading-loose">
           <div>
             <span className="opacity-50">1 </span>
             <span className="text-teal">withdraw_excess_lamports</span>

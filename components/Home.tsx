@@ -10,6 +10,7 @@ import { MintCard } from "./MintCard";
 import { MintChecker } from "./MintChecker";
 import { StatsBar } from "./StatsBar";
 import { SuccessScreen, type RecoveryResult } from "./SuccessScreen";
+import { ThemeToggle } from "./ThemeToggle";
 import { Skeleton } from "./ui";
 
 const GITHUB_URL = "https://github.com/Horlahmee/solrescue";
@@ -39,7 +40,10 @@ export function Home({ feeWallet, feeBps }: HomeProps) {
             </span>
           )}
         </div>
-        <WalletMultiButton />
+        <div className="flex items-center gap-3">
+          <ThemeToggle />
+          <WalletMultiButton />
+        </div>
       </header>
 
       <div className="flex-1 flex flex-col gap-10">

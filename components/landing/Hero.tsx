@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { formatSol } from "@/lib/formatSol";
 import { GithubIcon } from "@/components/icons";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import type { LandingStats } from "./data";
 
 const GITHUB_URL = "https://github.com/Horlahmee/solrescue";
@@ -30,12 +31,15 @@ export function Nav() {
           <GithubIcon className="size-4" /> Source
         </a>
       </div>
-      <Link
-        href="/app"
-        className="nb-press inline-flex items-center h-10 px-4 rounded-md bg-teal text-ink font-bold text-sm border-2 border-ink shadow-[4px_4px_0_var(--color-ink)]"
-      >
-        Launch app
-      </Link>
+      <div className="flex items-center gap-3">
+        <ThemeToggle />
+        <Link
+          href="/app"
+          className="nb-press inline-flex items-center h-10 px-4 rounded-md bg-teal font-bold text-sm border-2 border-ink shadow-[4px_4px_0_var(--color-ink)]"
+        >
+          Launch app
+        </Link>
+      </div>
     </nav>
   );
 }
@@ -51,9 +55,10 @@ export function Hero({ stats }: { stats: LandingStats }) {
           </span>{" "}
           in your mint accounts.
         </h1>
-        <p className="text-lg leading-relaxed max-w-xl text-muted">
-          If your wallet is the mint authority, one signed transaction returns
-          it. Non-custodial, open source, simulated before you sign.
+        <p className="text-lg leading-relaxed max-w-xl text-muted font-medium">
+          If your wallet is the mint authority,{" "}
+          <em className="text-ink">one signed transaction</em> returns it.
+          Non-custodial, open source, simulated before you sign.
         </p>
         <div className="flex flex-wrap items-center gap-5">
           <Link

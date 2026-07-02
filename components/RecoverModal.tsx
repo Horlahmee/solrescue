@@ -103,7 +103,7 @@ export function RecoverModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/40 animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 animate-fade-in"
       onClick={() => !busy && onClose()}
       role="dialog"
       aria-modal="true"

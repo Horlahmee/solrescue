@@ -110,7 +110,7 @@ export function Faq() {
           <details key={q} className="nb rounded-lg group open:shadow-none open:translate-x-[4px] open:translate-y-[4px] transition-all">
             <summary className="cursor-pointer list-none px-5 py-4 font-bold flex items-center justify-between gap-4">
               {q}
-              <span className="border-2 border-ink size-6 flex items-center justify-center text-sm bg-surface-2 group-open:rotate-45 group-open:bg-teal transition-all shrink-0">
+              <span className="border-2 border-ink size-6 flex items-center justify-center text-sm bg-surface-2 group-open:rotate-45 group-open:bg-teal group-open:text-on-accent transition-all shrink-0">
                 +
               </span>
             </summary>

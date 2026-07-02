@@ -16,16 +16,20 @@ export const metadata: Metadata = {
     "Non-custodial recovery of SOL stranded in Solana mint accounts. Connect your wallet, see exactly what you get back, sign one transaction. Keys never leave your wallet.",
 };
 
+// Applies the saved (or system) theme before first paint to avoid a flash.
+const themeScript = `(function(){try{var t=localStorage.getItem('theme');if(t==='dark'||(!t&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.classList.add('dark')}catch(e){}})()`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${syne.variable} ${dmSans.variable} ${jetbrainsMono.variable} antialiased`}
       >
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <Providers>{children}</Providers>
       </body>
     </html>

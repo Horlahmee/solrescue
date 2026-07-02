@@ -10,7 +10,7 @@ export function Skeleton({ className = "" }: { className?: string }) {
   return (
     <div
       aria-hidden
-      className={`rounded-md border-2 border-ink/10 animate-shimmer bg-[linear-gradient(110deg,var(--color-surface-2)40%,#f8f4ea_50%,var(--color-surface-2)60%)] bg-[length:200%_100%] ${className}`}
+      className={`rounded-md border-2 border-ink/10 animate-shimmer bg-[linear-gradient(110deg,var(--color-surface-2)40%,var(--color-surface)50%,var(--color-surface-2)60%)] bg-[length:200%_100%] ${className}`}
     />
   );
 }

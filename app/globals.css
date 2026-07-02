@@ -1,7 +1,8 @@
 @import "tailwindcss";
 
 /* Neubrutalist take on the TechGenie palette — teal/amber kept as the brand
-   accents, now as flat color blocks on paper with hard black structure. */
+   accents, now as flat color blocks on paper with hard black structure.
+   Dark mode flips paper/ink; accent blocks stay fixed with fixed dark text. */
 @theme {
   --color-teal: #00e5c3;
   --color-teal-deep: #00806c;
@@ -13,7 +14,11 @@
   --color-edge: #14130f;
   --color-edge-2: #14130f;
   --color-ink: #14130f;
-  --color-muted: #56534a;
+  --color-muted: #4c4a42;
+  /* fixed regardless of theme: text on accent blocks, terminal card */
+  --color-on-accent: #14130f;
+  --color-terminal: #14130f;
+  --color-terminal-ink: #f6f2e8;
   --font-display: var(--font-syne);
   --font-body: var(--font-dm-sans);
   --font-mono: var(--font-jetbrains-mono);
@@ -22,6 +27,16 @@
   --animate-fade-in: fade-in 0.25s ease both;
   --animate-shimmer: shimmer 1.6s linear infinite;
   --animate-pop: pop 0.45s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+}
+
+.dark {
+  --color-bg: #17140e;
+  --color-surface: #211d14;
+  --color-surface-2: #2c2719;
+  --color-edge: #f4f0e6;
+  --color-edge-2: #f4f0e6;
+  --color-ink: #f4f0e6;
+  --color-muted: #b6ae9d;
 }
 
 @keyframes fade-up {
@@ -61,6 +76,10 @@
   }
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   background: var(--color-bg);
   color: var(--color-ink);
@@ -69,12 +88,26 @@ body {
 
 ::selection {
   background: var(--color-teal);
-  color: var(--color-ink);
+  color: var(--color-on-accent);
 }
 
 :focus-visible {
   outline: 3px solid var(--color-ink);
   outline-offset: 2px;
+}
+
+section[id] {
+  scroll-margin-top: 1.5rem;
+}
+
+@layer components {
+  /* Accent blocks always carry near-black text, in both themes. Explicit
+     text-* utilities on children still win (utilities layer comes later). */
+  .bg-teal,
+  .bg-amber,
+  .bg-pink {
+    color: var(--color-on-accent);
+  }
 }
 
 /* The neubrutalist primitives: hard borders, hard shadows, physical presses */
@@ -110,10 +143,10 @@ body {
   }
 }
 
-/* Wallet-adapter UI, re-skinned neubrutalist */
+/* Wallet-adapter UI, re-skinned neubrutalist (theme-aware via tokens) */
 .wallet-adapter-button-trigger {
   background: var(--color-teal) !important;
-  color: var(--color-ink) !important;
+  color: var(--color-on-accent) !important;
   font-family: var(--font-body) !important;
   font-weight: 700 !important;
   font-size: 0.875rem !important;
@@ -152,14 +185,16 @@ body {
   background: var(--color-surface-2) !important;
 }
 .wallet-adapter-modal-list-more {
-  color: var(--color-teal-deep) !important;
+  color: var(--color-ink) !important;
+  text-decoration: underline;
 }
 .wallet-adapter-modal-button-close {
   background: var(--color-surface-2) !important;
+  border: 2px solid var(--color-ink) !important;
 }
 .wallet-adapter-modal-button-close svg {
   fill: var(--color-ink) !important;
 }
 .wallet-adapter-modal-overlay {
-  background: rgb(20 19 15 / 0.4) !important;
+  background: rgb(0 0 0 / 0.5) !important;
 }
