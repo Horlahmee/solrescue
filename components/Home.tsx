@@ -27,14 +27,14 @@ export function Home({ feeWallet, feeBps }: HomeProps) {
   const cluster = getCluster();
 
   return (
-    <main className="max-w-3xl mx-auto px-6 py-8 sm:py-12 flex flex-col gap-12 min-h-dvh">
+    <main className="max-w-3xl mx-auto px-6 py-8 sm:py-10 flex flex-col gap-10 min-h-dvh">
       <header className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Link href="/" className="font-display text-xl tracking-tight">
-            Sol<span className="text-teal">Rescue</span>
+          <Link href="/" className="font-display font-bold text-lg tracking-tight">
+            Sol<span className="bg-teal px-1 border-2 border-ink">Rescue</span>
           </Link>
           {cluster === "devnet" && (
-            <span className="font-mono text-[11px] uppercase tracking-wider text-amber border border-amber/40 rounded-full px-2 py-0.5">
+            <span className="font-mono text-[11px] font-bold uppercase tracking-wider bg-amber border-2 border-ink px-2 py-0.5 -rotate-2">
               devnet
             </span>
           )}
@@ -42,7 +42,7 @@ export function Home({ feeWallet, feeBps }: HomeProps) {
         <WalletMultiButton />
       </header>
 
-      <div className="flex-1 flex flex-col gap-12">
+      <div className="flex-1 flex flex-col gap-10">
         {success ? (
           <SuccessScreen result={success} onDone={() => setSuccess(null)} />
         ) : publicKey ? (
@@ -62,12 +62,12 @@ export function Home({ feeWallet, feeBps }: HomeProps) {
         <StatsBar />
       </div>
 
-      <footer className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted border-t border-edge pt-6">
+      <footer className="flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold border-t-2 border-ink pt-6">
         <a
           href={GITHUB_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="hover:text-teal transition-colors"
+          className="hover:underline underline-offset-4 decoration-2"
         >
           Source code (MIT)
         </a>
@@ -75,11 +75,11 @@ export function Home({ feeWallet, feeBps }: HomeProps) {
           href={SIMD_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="hover:text-teal transition-colors"
+          className="hover:underline underline-offset-4 decoration-2"
         >
           SIMD-0266
         </a>
-        <span className="sm:ml-auto">
+        <span className="sm:ml-auto text-muted">
           Non-custodial. Your keys never leave your wallet.
         </span>
       </footer>
@@ -91,29 +91,30 @@ function Hero() {
   return (
     <section className="flex flex-col gap-8 animate-fade-up">
       <div className="flex flex-col gap-4">
-        <h1 className="font-display text-4xl sm:text-5xl leading-[1.15] tracking-tight">
-          SOL stuck in a mint account?
-          <br />
-          <span className="text-teal">Get it back in one click.</span>
+        <h1 className="font-display font-bold text-4xl sm:text-5xl leading-[1.08] tracking-tight">
+          SOL stuck in a mint?{" "}
+          <span className="inline-block bg-teal border-2 border-ink px-2 shadow-[4px_4px_0_var(--color-ink)] -rotate-1">
+            Get it back.
+          </span>
         </h1>
         <p className="text-muted max-w-xl leading-relaxed">
-          The p-token upgrade made SOL mistakenly sent to token mint addresses
-          recoverable — if you’re the mint authority. Connect your wallet to
-          see what’s yours. You sign one transaction; we never touch your keys.
+          Connect your wallet to see every mint where you’re the authority.
+          One signature brings the SOL home — we never touch your keys.
         </p>
       </div>
-      <ol className="grid sm:grid-cols-3 gap-4">
+      <ol className="grid sm:grid-cols-3 gap-5">
         {[
-          ["Connect", "We look up mints where your wallet is the authority."],
-          ["Verify", "Exact figures, simulated on-chain before you sign."],
-          ["Recover", "SOL lands in your wallet. 10% fee, same transaction."],
-        ].map(([title, body], i) => (
-          <li
-            key={title}
-            className="border border-edge rounded-xl bg-surface p-5"
-          >
-            <div className="font-mono text-teal text-xs mb-3">0{i + 1}</div>
-            <div className="font-display mb-1.5">{title}</div>
+          ["Connect", "We look up mints where your wallet is the authority.", "bg-teal"],
+          ["Verify", "Exact figures, simulated on-chain before you sign.", "bg-amber"],
+          ["Recover", "SOL lands in your wallet. 10% fee, same transaction.", "bg-pink"],
+        ].map(([title, body, bg], i) => (
+          <li key={title} className="nb rounded-lg p-5 flex flex-col gap-3">
+            <span
+              className={`${bg} border-2 border-ink size-8 flex items-center justify-center font-mono font-bold text-sm shadow-[2px_2px_0_var(--color-ink)]`}
+            >
+              {i + 1}
+            </span>
+            <div className="font-display font-bold">{title}</div>
             <div className="text-sm text-muted leading-relaxed">{body}</div>
           </li>
         ))}
@@ -173,10 +174,10 @@ function Dashboard({ owner, feeWallet, feeBps, onSuccess }: DashboardProps) {
   if (rows === null) {
     return (
       <section className="flex flex-col gap-6" aria-busy>
-        <Skeleton className="h-8 w-64" />
-        <div className="grid sm:grid-cols-2 gap-4">
-          <Skeleton className="h-44 rounded-xl" />
-          <Skeleton className="h-44 rounded-xl" />
+        <Skeleton className="h-9 w-64" />
+        <div className="grid sm:grid-cols-2 gap-5">
+          <Skeleton className="h-44 rounded-lg" />
+          <Skeleton className="h-44 rounded-lg" />
         </div>
       </section>
     );
@@ -192,7 +193,7 @@ function Dashboard({ owner, feeWallet, feeBps, onSuccess }: DashboardProps) {
   return (
     <section className="flex flex-col gap-6 animate-fade-up">
       <div>
-        <h2 className="font-display text-2xl">
+        <h2 className="font-display font-bold text-2xl sm:text-3xl">
           {merged.length === 0
             ? "No recoverable mints in our index"
             : `${merged.length} recoverable mint${merged.length > 1 ? "s" : ""} found`}
@@ -205,7 +206,7 @@ function Dashboard({ owner, feeWallet, feeBps, onSuccess }: DashboardProps) {
       </div>
 
       {merged.length > 0 && (
-        <div className="grid sm:grid-cols-2 gap-4">
+        <div className="grid sm:grid-cols-2 gap-5">
           {merged.map((row) => (
             <MintCard
               key={row.mint_address}

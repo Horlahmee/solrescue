@@ -6,34 +6,36 @@ const SIMD_URL =
 
 export function FinalCta() {
   return (
-    <section className="py-24 border-t border-edge flex flex-col items-start gap-6">
-      <h2 className="font-display text-3xl sm:text-4xl leading-snug max-w-xl">
-        Find out in thirty seconds.
-      </h2>
-      <p className="text-muted max-w-md">
-        Connect a wallet or paste a mint address. No sign-up, no deposit.
-      </p>
-      <Link
-        href="/app"
-        className="inline-flex items-center h-11 px-6 rounded-md bg-teal text-[#05261f] font-semibold text-sm hover:brightness-110 transition-all"
-      >
-        Launch app
-      </Link>
+    <section className="py-20 border-t-2 border-ink">
+      <div className="nb rounded-xl bg-teal p-10 sm:p-14 flex flex-col items-start gap-6 shadow-[8px_8px_0_var(--color-ink)]">
+        <h2 className="font-display font-bold text-3xl sm:text-5xl leading-tight max-w-2xl">
+          Find out in thirty seconds.
+        </h2>
+        <p className="max-w-md font-medium">
+          Connect a wallet or paste a mint address. No sign-up, no deposit.
+        </p>
+        <Link
+          href="/app"
+          className="nb-press inline-flex items-center h-12 px-7 rounded-md bg-ink text-surface font-bold border-2 border-ink shadow-[5px_5px_0_var(--color-surface)]"
+        >
+          Launch app →
+        </Link>
+      </div>
     </section>
   );
 }
 
 export function Footer() {
   return (
-    <footer className="border-t border-edge py-8 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted">
-      <div className="font-display text-ink">
-        Sol<span className="text-teal">Rescue</span>
+    <footer className="border-t-2 border-ink py-8 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm font-semibold">
+      <div className="font-display font-bold">
+        Sol<span className="bg-teal px-1 border-2 border-ink">Rescue</span>
       </div>
       <a
         href={GITHUB_URL}
         target="_blank"
         rel="noopener noreferrer"
-        className="hover:text-teal transition-colors"
+        className="hover:underline underline-offset-4 decoration-2"
       >
         Source (MIT)
       </a>
@@ -41,7 +43,7 @@ export function Footer() {
         href={SIMD_URL}
         target="_blank"
         rel="noopener noreferrer"
-        className="hover:text-teal transition-colors"
+        className="hover:underline underline-offset-4 decoration-2"
       >
         SIMD-0266
       </a>
@@ -49,11 +51,13 @@ export function Footer() {
         href={`${GITHUB_URL}/blob/main/SECURITY.md`}
         target="_blank"
         rel="noopener noreferrer"
-        className="hover:text-teal transition-colors"
+        className="hover:underline underline-offset-4 decoration-2"
       >
         Security
       </a>
-      <span className="sm:ml-auto">Non-custodial by construction.</span>
+      <span className="sm:ml-auto text-muted">
+        Non-custodial by construction.
+      </span>
     </footer>
   );
 }

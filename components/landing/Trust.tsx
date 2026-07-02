@@ -7,51 +7,66 @@ export function Trust() {
     [
       "No keys, ever",
       "There is no key or seed input anywhere in this product. Signing happens only inside your wallet.",
+      "bg-teal",
     ],
     [
       "Funds never route through us",
       "The withdrawal pays your wallet directly. The 10% fee is a separate instruction in the same atomic transaction.",
+      "bg-amber",
     ],
     [
       "Simulation before signature",
       "Exact figures are shown from an on-chain simulation before you can sign. If simulation fails, signing is blocked.",
+      "bg-pink",
     ],
     [
       "Open source",
       "The entire codebase is public under MIT — app, transaction builder, indexer. Verify every claim on this page against it.",
+      "bg-surface-2",
     ],
   ] as const;
 
   return (
     <section
       id="security"
-      className="py-20 border-t border-edge flex flex-col gap-12"
+      className="py-16 border-t-2 border-ink flex flex-col gap-10"
     >
-      <div className="flex flex-col gap-4 max-w-2xl">
-        <SectionLabel n="04">Security</SectionLabel>
-        <h2 className="font-display text-3xl leading-snug">
+      <div className="flex flex-col gap-5 max-w-2xl">
+        <SectionLabel n="04" bg="bg-teal">
+          Security
+        </SectionLabel>
+        <h2 className="font-display font-bold text-3xl sm:text-4xl leading-tight">
           Assume every recovery tool is a drainer. Then verify this one.
         </h2>
       </div>
 
-      <dl className="grid sm:grid-cols-2 gap-x-12 gap-y-8">
-        {claims.map(([title, body]) => (
-          <div key={title} className="flex flex-col gap-2">
-            <dt className="font-display">{title}</dt>
-            <dd className="text-sm text-muted leading-relaxed">{body}</dd>
+      <div className="grid sm:grid-cols-2 gap-6">
+        {claims.map(([title, body, bg]) => (
+          <div key={title} className="nb rounded-lg overflow-hidden">
+            <div className={`${bg} border-b-2 border-ink px-5 py-3 font-display font-bold`}>
+              {title}
+            </div>
+            <p className="px-5 py-4 text-sm text-muted leading-relaxed">
+              {body}
+            </p>
           </div>
         ))}
-      </dl>
+      </div>
 
-      <p className="text-sm text-muted leading-relaxed border-l-2 border-amber pl-4 max-w-2xl">
-        <span className="text-amber font-medium">
-          If a mint’s authority is revoked,
-        </span>{" "}
-        recovery requires the mint’s original private keypair. Tools that ask
-        you to paste that keypair into a website are asking you to compromise
-        it — no “wiped after use” promise is verifiable. We don’t offer this,
-        and you shouldn’t accept it from anyone.
-      </p>
+      <div className="nb rounded-lg bg-amber p-6 flex flex-col gap-2 -rotate-[0.5deg]">
+        <div className="font-display font-bold text-lg">
+          ⚠ About “revoked authority” recovery
+        </div>
+        <p className="text-sm leading-relaxed max-w-2xl">
+          If a mint’s authority is revoked, recovery requires the mint’s
+          original private keypair. Tools that ask you to paste that keypair
+          into a website are asking you to compromise it — no “wiped after
+          use” promise is verifiable.{" "}
+          <span className="font-bold">
+            We don’t offer this, and you shouldn’t accept it from anyone.
+          </span>
+        </p>
+      </div>
     </section>
   );
 }
@@ -81,21 +96,25 @@ export function Faq() {
   ];
 
   return (
-    <section id="faq" className="py-20 border-t border-edge flex flex-col gap-12">
-      <div className="flex flex-col gap-4">
-        <SectionLabel n="05">FAQ</SectionLabel>
-        <h2 className="font-display text-3xl leading-snug">Questions</h2>
+    <section id="faq" className="py-16 border-t-2 border-ink flex flex-col gap-10">
+      <div className="flex flex-col gap-5">
+        <SectionLabel n="05" bg="bg-pink">
+          FAQ
+        </SectionLabel>
+        <h2 className="font-display font-bold text-3xl sm:text-4xl leading-tight">
+          Questions
+        </h2>
       </div>
-      <div className="flex flex-col max-w-3xl divide-y divide-edge border-y border-edge">
+      <div className="flex flex-col gap-4 max-w-3xl">
         {items.map(([q, a]) => (
-          <details key={q} className="group">
-            <summary className="cursor-pointer list-none py-5 font-medium flex items-center justify-between gap-4">
+          <details key={q} className="nb rounded-lg group open:shadow-none open:translate-x-[4px] open:translate-y-[4px] transition-all">
+            <summary className="cursor-pointer list-none px-5 py-4 font-bold flex items-center justify-between gap-4">
               {q}
-              <span className="text-muted group-open:rotate-45 transition-transform text-lg leading-none">
+              <span className="border-2 border-ink size-6 flex items-center justify-center text-sm bg-surface-2 group-open:rotate-45 group-open:bg-teal transition-all shrink-0">
                 +
               </span>
             </summary>
-            <p className="pb-5 text-sm text-muted leading-relaxed max-w-2xl">
+            <p className="px-5 pb-5 text-sm text-muted leading-relaxed max-w-2xl">
               {a}
             </p>
           </details>
@@ -105,7 +124,7 @@ export function Faq() {
         href={GITHUB_URL}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-sm text-muted hover:text-teal transition-colors"
+        className="font-semibold hover:underline underline-offset-4 decoration-2 self-start"
       >
         More questions? Open an issue on GitHub →
       </a>

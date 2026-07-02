@@ -10,13 +10,13 @@ export function Skeleton({ className = "" }: { className?: string }) {
   return (
     <div
       aria-hidden
-      className={`rounded-md animate-shimmer bg-[linear-gradient(110deg,var(--color-surface-2)40%,var(--color-edge)50%,var(--color-surface-2)60%)] bg-[length:200%_100%] ${className}`}
+      className={`rounded-md border-2 border-ink/10 animate-shimmer bg-[linear-gradient(110deg,var(--color-surface-2)40%,#f8f4ea_50%,var(--color-surface-2)60%)] bg-[length:200%_100%] ${className}`}
     />
   );
 }
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "ghost";
+  variant?: "primary" | "ghost" | "dark";
   busy?: boolean;
 }
 
@@ -29,11 +29,12 @@ export function Button({
   ...rest
 }: ButtonProps) {
   const base =
-    "inline-flex items-center justify-center gap-2 h-10 px-4 rounded-lg font-semibold text-sm transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.98]";
-  const skin =
-    variant === "primary"
-      ? "bg-teal text-[#05261f] hover:brightness-110"
-      : "border border-edge text-ink hover:border-edge-2 hover:bg-surface-2";
+    "nb-press inline-flex items-center justify-center gap-2 h-11 px-5 rounded-md font-bold text-sm border-2 border-ink shadow-[4px_4px_0_var(--color-ink)] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:transform-none disabled:hover:shadow-[4px_4px_0_var(--color-ink)]";
+  const skin = {
+    primary: "bg-teal text-ink",
+    ghost: "bg-surface text-ink",
+    dark: "bg-ink text-surface shadow-[4px_4px_0_var(--color-teal)]",
+  }[variant];
   return (
     <button
       type="button"

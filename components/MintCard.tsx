@@ -38,24 +38,30 @@ export function MintCard({
       : (tokenName ?? tokenSymbol ?? null);
 
   return (
-    <div className="card-hover border border-edge rounded-xl bg-surface p-5 flex flex-col gap-4 animate-fade-up">
+    <div className="nb rounded-lg p-5 flex flex-col gap-4 animate-fade-up">
       <div className="flex items-center justify-between gap-2">
-        <div className="font-display truncate">
+        <div className="font-display font-bold truncate">
           {label ?? <Address value={mintAddress} />}
         </div>
         {label && <Address value={mintAddress} />}
       </div>
 
-      <div className="flex items-baseline justify-between">
+      <div className="flex items-baseline justify-between gap-2">
         <div>
-          <div className="font-mono text-2xl text-teal">
-            {formatSol(indexedExcess)}
-            <span className="text-sm text-muted ml-1.5">SOL</span>
+          <div className="font-mono font-bold text-2xl">
+            <span className="bg-teal border-2 border-ink px-1.5">
+              {formatSol(indexedExcess)}
+            </span>
+            <span className="text-sm font-normal text-muted ml-1.5">SOL</span>
           </div>
-          <div className="text-xs text-muted mt-0.5">recoverable</div>
+          <div className="text-xs font-semibold uppercase tracking-wide mt-2">
+            recoverable
+          </div>
         </div>
         <div className="text-right">
-          <div className="font-mono text-sm">{formatSol(preview.net)} SOL</div>
+          <div className="font-mono font-bold text-sm">
+            {formatSol(preview.net)} SOL
+          </div>
           <div className="text-xs text-muted mt-0.5">you receive</div>
         </div>
       </div>

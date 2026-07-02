@@ -77,10 +77,10 @@ export function RecoverModal({
     return () => window.removeEventListener("keydown", onKey);
   }, [busy, onClose]);
 
-  const sign = async (quote: RecoveryQuote) => {
-    setStage({ step: "signing", quote });
+  const sign = async (readyQuote: RecoveryQuote) => {
+    setStage({ step: "signing", quote: readyQuote });
     try {
-      const signature = await sendTransaction(quote.tx, connection);
+      const signature = await sendTransaction(readyQuote.tx, connection);
       setStage({ step: "confirming", signature });
       const { blockhash, lastValidBlockHeight } =
         await connection.getLatestBlockhash();
@@ -92,9 +92,9 @@ export function RecoverModal({
       onSuccess({
         signature,
         mintAddress,
-        excess: quote.excess,
-        fee: quote.fee,
-        net: quote.net,
+        excess: readyQuote.excess,
+        fee: readyQuote.fee,
+        net: readyQuote.net,
       });
     } catch (error: unknown) {
       setStage({ step: "error", message: toUserMessage(error) });
@@ -103,19 +103,19 @@ export function RecoverModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/40 animate-fade-in"
       onClick={() => !busy && onClose()}
       role="dialog"
       aria-modal="true"
       aria-label="Recover SOL"
     >
       <div
-        className="w-full max-w-md bg-surface border border-edge rounded-2xl p-6 animate-fade-up"
+        className="w-full max-w-md bg-surface border-2 border-ink rounded-xl shadow-[8px_8px_0_var(--color-ink)] p-6 animate-fade-up"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="flex items-start justify-between mb-5">
           <div>
-            <h3 className="font-display text-lg">Recover SOL</h3>
+            <h3 className="font-display font-bold text-xl">Recover SOL</h3>
             <div className="text-sm text-muted mt-0.5">
               {label ? `${label} · ` : ""}
               <Address value={mintAddress} />
@@ -126,16 +126,16 @@ export function RecoverModal({
               type="button"
               onClick={onClose}
               aria-label="Close"
-              className="text-muted hover:text-ink transition-colors cursor-pointer p-1"
+              className="nb-press border-2 border-ink bg-surface-2 shadow-[2px_2px_0_var(--color-ink)] p-1 cursor-pointer"
             >
-              <X className="size-5" />
+              <X className="size-4" />
             </button>
           )}
         </div>
 
         {stage.step === "verifying" && (
           <StageShell>
-            <Spinner className="size-6 text-teal" />
+            <Spinner className="size-6" />
             <p className="text-sm text-muted text-center">
               Reading the mint fresh from the chain and simulating the
               transaction…
@@ -146,12 +146,12 @@ export function RecoverModal({
         {stage.step === "ready" && (
           <div className="flex flex-col gap-4 animate-fade-up">
             <QuoteBreakdown quote={stage.quote} />
-            <div className="flex items-start gap-2 text-xs text-muted bg-surface-2 border border-edge rounded-lg p-3">
-              <ShieldCheck className="size-4 text-teal shrink-0 mt-0.5" />
+            <div className="flex items-start gap-2 text-xs border-2 border-ink bg-surface-2 rounded-md p-3">
+              <ShieldCheck className="size-4 shrink-0 mt-0.5" />
               <span>
                 Simulated on-chain just now — your wallet will show these same
-                numbers. Two instructions, nothing else: the withdrawal to your
-                wallet, and the fee.
+                numbers. Two instructions, nothing else: the withdrawal to
+                your wallet, and the fee.
               </span>
             </div>
             <Button onClick={() => sign(stage.quote)} className="w-full">
@@ -162,13 +162,13 @@ export function RecoverModal({
 
         {stage.step === "signing" && (
           <StageShell>
-            <Spinner className="size-6 text-teal" />
-            <p className="text-sm text-center">
+            <Spinner className="size-6" />
+            <p className="text-sm font-bold text-center">
               Approve the transaction in your wallet
             </p>
             <p className="text-xs text-muted text-center">
               Check the figures there — they should read exactly{" "}
-              <span className="font-mono text-ink">
+              <span className="font-mono font-bold text-ink">
                 +{formatSol(stage.quote.net)} SOL
               </span>{" "}
               for you.
@@ -178,8 +178,10 @@ export function RecoverModal({
 
         {stage.step === "confirming" && (
           <StageShell>
-            <Spinner className="size-6 text-teal" />
-            <p className="text-sm text-center">Confirming on-chain…</p>
+            <Spinner className="size-6" />
+            <p className="text-sm font-bold text-center">
+              Confirming on-chain…
+            </p>
             <p className="font-mono text-xs text-muted break-all text-center">
               {stage.signature.slice(0, 20)}…
             </p>
@@ -188,7 +190,7 @@ export function RecoverModal({
 
         {stage.step === "error" && (
           <div className="flex flex-col gap-4 animate-fade-up">
-            <div className="flex items-start gap-2 text-sm text-amber bg-amber/5 border border-amber/30 rounded-lg p-3">
+            <div className="flex items-start gap-2 text-sm border-2 border-ink bg-amber rounded-md p-3 font-medium">
               <TriangleAlert className="size-4 shrink-0 mt-0.5" />
               <span>{stage.message}</span>
             </div>
@@ -217,19 +219,19 @@ function StageShell({ children }: { children: React.ReactNode }) {
 
 function QuoteBreakdown({ quote }: { quote: RecoveryQuote }) {
   return (
-    <div className="rounded-xl border border-edge overflow-hidden">
+    <div className="border-2 border-ink rounded-md overflow-hidden">
       <Row label="Stuck in the mint" value={`${formatSol(quote.excess)} SOL`} />
       <Row
         label="Service fee (10%)"
         value={`− ${formatSol(quote.fee)} SOL`}
         muted
       />
-      <div className="flex justify-center py-1 bg-surface-2 border-t border-edge">
-        <ArrowDown className="size-3.5 text-muted" aria-hidden />
+      <div className="flex justify-center py-1 bg-surface-2 border-t-2 border-ink">
+        <ArrowDown className="size-3.5" aria-hidden />
       </div>
-      <div className="flex items-center justify-between px-4 py-3 bg-teal/5 border-t border-teal/30">
-        <span className="text-sm">You receive</span>
-        <span className="font-mono text-lg text-teal">
+      <div className="flex items-center justify-between px-4 py-3 bg-teal border-t-2 border-ink">
+        <span className="text-sm font-bold">You receive</span>
+        <span className="font-mono font-bold text-lg">
           {formatSol(quote.net)} SOL
         </span>
       </div>
@@ -247,9 +249,9 @@ function Row({
   muted?: boolean;
 }) {
   return (
-    <div className="flex items-center justify-between px-4 py-3 bg-surface-2 not-first:border-t not-first:border-edge">
+    <div className="flex items-center justify-between px-4 py-3 bg-surface not-first:border-t-2 not-first:border-ink">
       <span className="text-sm text-muted">{label}</span>
-      <span className={`font-mono text-sm ${muted ? "text-muted" : ""}`}>
+      <span className={`font-mono text-sm ${muted ? "text-muted" : "font-bold"}`}>
         {value}
       </span>
     </div>

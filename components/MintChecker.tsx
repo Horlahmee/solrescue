@@ -46,20 +46,20 @@ export function MintChecker({ onRecoverable }: MintCheckerProps) {
   };
 
   return (
-    <div className="border border-edge rounded-xl bg-surface p-5 animate-fade-up">
-      <h3 className="font-display text-lg">Check any mint address</h3>
+    <div className="nb rounded-lg p-5 animate-fade-up">
+      <h3 className="font-display font-bold text-lg">Check any mint address</h3>
       <p className="text-sm text-muted mt-1 mb-4">
         No wallet needed — see instantly whether an address holds recoverable
         SOL.
       </p>
-      <div className="flex gap-2">
+      <div className="flex gap-3">
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && check()}
           placeholder="Paste a mint address"
           spellCheck={false}
-          className="flex-1 min-w-0 h-10 bg-bg border border-edge rounded-lg px-3 font-mono text-sm placeholder:text-muted placeholder:font-body focus:outline-none focus:border-teal/60 transition-colors"
+          className="flex-1 min-w-0 h-11 bg-surface border-2 border-ink rounded-md px-3 font-mono text-sm placeholder:text-muted placeholder:font-body focus:outline-none focus:shadow-[3px_3px_0_var(--color-ink)] transition-shadow"
         />
         <Button
           onClick={check}
@@ -94,11 +94,14 @@ function CheckResult({ status }: { status: MintStatus }) {
       return (
         <ResultNote tone="teal" icon={<CircleCheck className="size-4" />}>
           Recoverable by{" "}
-          <span className="font-mono">
+          <span className="font-mono font-bold">
             {status.authority.slice(0, 4)}…{status.authority.slice(-4)}
           </span>{" "}
-          — <span className="font-mono">{formatSol(status.excess)} SOL</span>.
-          Connect that wallet to recover it.
+          —{" "}
+          <span className="font-mono font-bold">
+            {formatSol(status.excess)} SOL
+          </span>
+          . Connect that wallet to recover it.
         </ResultNote>
       );
     case "revoked":
@@ -111,13 +114,13 @@ function CheckResult({ status }: { status: MintStatus }) {
       );
     case "no-excess":
       return (
-        <ResultNote tone="muted" icon={<Info className="size-4" />}>
+        <ResultNote tone="plain" icon={<Info className="size-4" />}>
           No excess SOL on this mint.
         </ResultNote>
       );
     case "not-a-mint":
       return (
-        <ResultNote tone="muted" icon={<Info className="size-4" />}>
+        <ResultNote tone="plain" icon={<Info className="size-4" />}>
           This address isn’t a token mint account.
         </ResultNote>
       );
@@ -129,18 +132,18 @@ function ResultNote({
   icon,
   children,
 }: {
-  tone: "teal" | "amber" | "muted";
+  tone: "teal" | "amber" | "plain";
   icon: React.ReactNode;
   children: React.ReactNode;
 }) {
   const tones = {
-    teal: "text-teal bg-teal/5 border-teal/30",
-    amber: "text-amber bg-amber/5 border-amber/30",
-    muted: "text-muted bg-surface-2 border-edge",
+    teal: "bg-teal",
+    amber: "bg-amber",
+    plain: "bg-surface-2",
   };
   return (
     <div
-      className={`flex items-start gap-2 text-sm rounded-lg border p-3 ${tones[tone]}`}
+      className={`flex items-start gap-2 text-sm rounded-md border-2 border-ink p-3 font-medium ${tones[tone]}`}
     >
       <span className="shrink-0 mt-0.5">{icon}</span>
       <span>{children}</span>

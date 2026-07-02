@@ -7,32 +7,32 @@ const GITHUB_URL = "https://github.com/Horlahmee/solrescue";
 
 export function Nav() {
   return (
-    <nav className="flex items-center justify-between py-6 border-b border-edge">
-      <div className="font-display text-lg tracking-tight">
-        Sol<span className="text-teal">Rescue</span>
+    <nav className="flex items-center justify-between py-5">
+      <div className="font-display font-bold text-lg tracking-tight">
+        Sol<span className="bg-teal px-1 border-2 border-ink">Rescue</span>
       </div>
-      <div className="hidden sm:flex items-center gap-8 text-sm text-muted">
-        <a href="#how" className="hover:text-ink transition-colors">
+      <div className="hidden sm:flex items-center gap-7 text-sm font-semibold">
+        <a href="#how" className="hover:underline underline-offset-4 decoration-2">
           How it works
         </a>
-        <a href="#security" className="hover:text-ink transition-colors">
+        <a href="#security" className="hover:underline underline-offset-4 decoration-2">
           Security
         </a>
-        <a href="#faq" className="hover:text-ink transition-colors">
+        <a href="#faq" className="hover:underline underline-offset-4 decoration-2">
           FAQ
         </a>
         <a
           href={GITHUB_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="hover:text-ink transition-colors inline-flex items-center gap-1.5"
+          className="hover:underline underline-offset-4 decoration-2 inline-flex items-center gap-1.5"
         >
           <GithubIcon className="size-4" /> Source
         </a>
       </div>
       <Link
         href="/app"
-        className="inline-flex items-center h-9 px-4 rounded-md bg-teal text-[#05261f] font-semibold text-sm hover:brightness-110 transition-all"
+        className="nb-press inline-flex items-center h-10 px-4 rounded-md bg-teal text-ink font-bold text-sm border-2 border-ink shadow-[4px_4px_0_var(--color-ink)]"
       >
         Launch app
       </Link>
@@ -42,49 +42,57 @@ export function Nav() {
 
 export function Hero({ stats }: { stats: LandingStats }) {
   return (
-    <section className="pt-24 pb-20 flex flex-col gap-10 animate-fade-up">
-      <div className="flex flex-col gap-6 max-w-2xl">
-        <h1 className="font-display text-5xl sm:text-6xl leading-[1.06] tracking-tight">
-          Recover the SOL stuck in your mint accounts.
+    <section className="pt-20 pb-16 flex flex-col gap-12 animate-fade-up">
+      <div className="flex flex-col gap-7 max-w-3xl">
+        <h1 className="font-display font-bold text-5xl sm:text-[4.2rem] leading-[1.04] tracking-tight">
+          Recover the SOL{" "}
+          <span className="inline-block bg-teal border-2 border-ink px-3 shadow-[5px_5px_0_var(--color-ink)] -rotate-1">
+            stuck
+          </span>{" "}
+          in your mint accounts.
         </h1>
-        <p className="text-muted text-lg leading-relaxed max-w-xl">
+        <p className="text-lg leading-relaxed max-w-xl text-muted">
           If your wallet is the mint authority, one signed transaction returns
           it. Non-custodial, open source, simulated before you sign.
         </p>
-        <div className="flex items-center gap-6">
+        <div className="flex flex-wrap items-center gap-5">
           <Link
             href="/app"
-            className="inline-flex items-center h-11 px-6 rounded-md bg-teal text-[#05261f] font-semibold text-sm hover:brightness-110 transition-all"
+            className="nb-press inline-flex items-center h-12 px-7 rounded-md bg-ink text-surface font-bold border-2 border-ink shadow-[5px_5px_0_var(--color-teal)]"
           >
-            Check your mints
+            Check your mints →
           </Link>
           <a
             href="#how"
-            className="text-sm text-muted hover:text-ink transition-colors"
+            className="font-semibold hover:underline underline-offset-4 decoration-2"
           >
             How it works
           </a>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 border-y border-edge divide-x divide-edge">
+      <div className="nb rounded-lg grid grid-cols-2 sm:grid-cols-4 divide-x-2 divide-y-2 sm:divide-y-0 divide-ink overflow-hidden">
         <Stat
           value={formatSol(BigInt(stats.total_recoverable_lamports))}
           unit="SOL"
           label="recoverable, indexed"
+          bg="bg-teal"
         />
         <Stat
           value={stats.recoverable_mints.toLocaleString()}
           label="mints with stuck SOL"
+          bg="bg-surface"
         />
         <Stat
           value={formatSol(BigInt(stats.total_recovered_lamports))}
           unit="SOL"
           label="recovered"
+          bg="bg-amber"
         />
         <Stat
           value={stats.total_recoveries.toLocaleString()}
           label="recoveries"
+          bg="bg-surface"
         />
       </div>
     </section>
@@ -95,18 +103,22 @@ function Stat({
   value,
   unit,
   label,
+  bg,
 }: {
   value: string;
   unit?: string;
   label: string;
+  bg: string;
 }) {
   return (
-    <div className="px-5 py-5 first:pl-0">
-      <div className="font-mono text-xl text-ink">
+    <div className={`px-5 py-5 ${bg}`}>
+      <div className="font-mono font-bold text-2xl">
         {value}
-        {unit && <span className="text-xs text-muted ml-1">{unit}</span>}
+        {unit && <span className="text-xs font-normal ml-1">{unit}</span>}
       </div>
-      <div className="text-xs text-muted mt-1">{label}</div>
+      <div className="text-xs font-semibold mt-1 uppercase tracking-wide">
+        {label}
+      </div>
     </div>
   );
 }

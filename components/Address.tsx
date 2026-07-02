@@ -26,9 +26,9 @@ export function Address({ value }: AddressProps) {
       type="button"
       onClick={copy}
       title={value}
-      className="font-mono text-sm text-muted hover:text-teal transition-colors cursor-pointer"
+      className="font-mono text-sm text-muted hover:text-ink hover:underline underline-offset-4 decoration-2 transition-colors cursor-pointer"
     >
-      {copied ? "copied" : short}
+      {copied ? "copied!" : short}
     </button>
   );
 }

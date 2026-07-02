@@ -25,34 +25,43 @@ export function StatsBar() {
       });
   }, []);
 
-  const items: Array<[string, string | null]> = [
+  const items: Array<[string, string | null, string]> = [
     [
       "recoverable SOL indexed",
       stats ? formatSol(BigInt(stats.total_recoverable_lamports)) : null,
+      "bg-teal",
     ],
     [
       "mints with stuck SOL",
       stats ? stats.recoverable_mints.toLocaleString() : null,
+      "bg-surface",
     ],
     [
       "SOL recovered",
       stats ? formatSol(BigInt(stats.total_recovered_lamports)) : null,
+      "bg-amber",
     ],
-    ["recoveries", stats ? stats.total_recoveries.toLocaleString() : null],
+    [
+      "recoveries",
+      stats ? stats.total_recoveries.toLocaleString() : null,
+      "bg-surface",
+    ],
   ];
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-edge border border-edge rounded-xl overflow-hidden">
-      {items.map(([label, value]) => (
-        <div key={label} className="bg-surface px-4 py-3.5">
+    <div className="nb rounded-lg grid grid-cols-2 sm:grid-cols-4 divide-x-2 divide-y-2 sm:divide-y-0 divide-ink overflow-hidden">
+      {items.map(([label, value, bg]) => (
+        <div key={label} className={`px-4 py-4 ${bg}`}>
           {value === null ? (
             <Skeleton className="h-6 w-16" />
           ) : (
-            <div className="font-mono text-lg text-ink animate-fade-in">
+            <div className="font-mono font-bold text-lg animate-fade-in">
               {value}
             </div>
           )}
-          <div className="text-xs text-muted mt-1">{label}</div>
+          <div className="text-xs font-semibold uppercase tracking-wide mt-1">
+            {label}
+          </div>
         </div>
       ))}
     </div>
