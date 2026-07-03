@@ -45,3 +45,6 @@ next-env.d.ts
 
 # business pipeline — never public
 leads.csv
+
+# marketing / outreach pipeline — not public
+outreach/

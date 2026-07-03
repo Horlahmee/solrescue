@@ -20,7 +20,7 @@ export default async function LandingPage() {
       <Hero stats={stats} />
       <Problem />
       <HowItWorks />
-      <Leaderboard rows={leaderboard} />
+      <Leaderboard rows={leaderboard} stats={stats} />
       <Trust />
       <Faq />
       <FinalCta />

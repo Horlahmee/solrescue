@@ -6,18 +6,25 @@ import {
   LEADERBOARD_LIMIT,
   type LeaderboardRow,
 } from "./landing/data";
-import { TopMintsTable } from "./TopMintsTable";
+import { IndexTotals, TopMintsTable } from "./TopMintsTable";
 import { Skeleton } from "./ui";
+
+interface Totals {
+  mints: number;
+  lamports: number;
+}
 
 // Pre-connect leaderboard for the app page — client-fetched, hidden by the
 // parent as soon as a wallet connects.
 export function TopMintsLive() {
   const [rows, setRows] = useState<LeaderboardRow[] | null>(null);
+  const [totals, setTotals] = useState<Totals | null>(null);
 
   useEffect(() => {
+    const client = createAnonClient();
     // Swallow errors to an empty list — this is a secondary marketing widget,
     // not the recovery path, so a DB hiccup just hides it rather than erroring.
-    createAnonClient()
+    client
       .from("mints")
       .select(
         "mint_address, authority, excess_lamports, token_name, token_symbol",
@@ -28,19 +35,36 @@ export function TopMintsLive() {
       .limit(LEADERBOARD_LIMIT)
       .then(({ data }) => setRows((data as LeaderboardRow[]) ?? []))
       .then(undefined, () => setRows([]));
+
+    client
+      .from("stats")
+      .select("recoverable_mints, total_recoverable_lamports")
+      .single()
+      .then(({ data }) => {
+        if (data)
+          setTotals({
+            mints: data.recoverable_mints as number,
+            lamports: data.total_recoverable_lamports as number,
+          });
+      })
+      .then(undefined, () => {});
   }, []);
 
   if (rows !== null && rows.length === 0) return null;
 
   return (
     <section className="flex flex-col gap-4 animate-fade-up">
-      <div>
+      <div className="flex flex-col gap-3">
         <h3 className="font-display font-bold text-xl">
-          Top {LEADERBOARD_LIMIT} claimable balances
+          Top {LEADERBOARD_LIMIT} of every recoverable mint
         </h3>
-        <p className="text-sm text-muted mt-1">
-          Live from our mainnet index. Connect the authority wallet and it’s
-          yours.
+        <IndexTotals
+          mints={totals?.mints ?? null}
+          totalLamports={totals?.lamports ?? null}
+        />
+        <p className="text-sm text-muted">
+          Live from our mainnet index, still counting. Connect the authority
+          wallet and it’s yours.
         </p>
       </div>
       {rows === null ? (

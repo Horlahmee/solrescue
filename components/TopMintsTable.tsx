@@ -1,6 +1,30 @@
 import { formatSolCompact } from "@/lib/formatSol";
 import type { LeaderboardRow } from "./landing/data";
 
+// Scale-conveying totals: "top N of the full index". Two chips that wrap and
+// stack on narrow screens. null values render nothing (stats still loading).
+export function IndexTotals({
+  mints,
+  totalLamports,
+}: {
+  mints: number | null;
+  totalLamports: number | null;
+}) {
+  if (mints === null || totalLamports === null || mints === 0) return null;
+  return (
+    <div className="flex flex-wrap gap-2">
+      <span className="nb-flat rounded-md px-3 py-1.5 font-mono text-xs sm:text-sm">
+        <span className="font-bold">{mints.toLocaleString()}</span> recoverable
+        mints
+      </span>
+      <span className="nb-flat bg-teal rounded-md px-3 py-1.5 font-mono text-xs sm:text-sm">
+        <span className="font-bold">{formatSolCompact(BigInt(totalLamports))}</span>{" "}
+        SOL total
+      </span>
+    </div>
+  );
+}
+
 // Shared presentational table — server-rendered on the landing page,
 // client-fetched on the app's pre-connect view.
 export function TopMintsTable({ rows }: { rows: LeaderboardRow[] }) {
