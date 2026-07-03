@@ -14,6 +14,7 @@
 import { PublicKey } from '@solana/web3.js';
 import { createClient } from '@supabase/supabase-js';
 import { withBackoff } from './lib/backoff';
+import { heliusFetch } from './lib/heliusFetch';
 
 process.loadEnvFile('.env.local');
 
@@ -43,24 +44,20 @@ async function fetchPage(
   paginationKey: string | null,
 ): Promise<{ accounts: PagedAccount[]; paginationKey: string | null }> {
   return withBackoff('getProgramAccountsV2', async () => {
-    const response = await fetch(rpcUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        jsonrpc: '2.0',
-        id: 'solrescue-scan',
-        method: 'getProgramAccountsV2',
-        params: [
-          TOKEN_PROGRAM,
-          {
-            encoding: 'base64',
-            limit: PAGE_LIMIT,
-            filters: [{ dataSize: 82 }],
-            dataSlice: { offset: 0, length: 36 },
-            ...(paginationKey ? { paginationKey } : {}),
-          },
-        ],
-      }),
+    const response = await heliusFetch(rpcUrl, {
+      jsonrpc: '2.0',
+      id: 'solrescue-scan',
+      method: 'getProgramAccountsV2',
+      params: [
+        TOKEN_PROGRAM,
+        {
+          encoding: 'base64',
+          limit: PAGE_LIMIT,
+          filters: [{ dataSize: 82 }],
+          dataSlice: { offset: 0, length: 36 },
+          ...(paginationKey ? { paginationKey } : {}),
+        },
+      ],
     });
     if (!response.ok) {
       throw new Error(`RPC ${response.status} ${await response.text()}`);
@@ -94,15 +91,11 @@ function toRow(entry: PagedAccount, rentMinimum: number) {
 }
 
 async function fetchRentMinimum(rpcUrl: string): Promise<bigint> {
-  const response = await fetch(rpcUrl, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      jsonrpc: '2.0',
-      id: 'rent',
-      method: 'getMinimumBalanceForRentExemption',
-      params: [82],
-    }),
+  const response = await heliusFetch(rpcUrl, {
+    jsonrpc: '2.0',
+    id: 'rent',
+    method: 'getMinimumBalanceForRentExemption',
+    params: [82],
   });
   const body = await response.json();
   if (typeof body.result !== 'number') {

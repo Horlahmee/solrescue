@@ -7,6 +7,7 @@
  */
 import { createClient } from '@supabase/supabase-js';
 import { withBackoff } from './lib/backoff';
+import { heliusFetch } from './lib/heliusFetch';
 
 process.loadEnvFile('.env.local');
 
@@ -28,15 +29,11 @@ interface AssetMeta {
 async function fetchMetadata(rpcUrl: string, mint: string): Promise<AssetMeta> {
   try {
     const response = await withBackoff(`getAsset ${mint.slice(0, 4)}`, () =>
-      fetch(rpcUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          jsonrpc: '2.0',
-          id: 'solrescue-enrich',
-          method: 'getAsset',
-          params: { id: mint },
-        }),
+      heliusFetch(rpcUrl, {
+        jsonrpc: '2.0',
+        id: 'solrescue-enrich',
+        method: 'getAsset',
+        params: { id: mint },
       }),
     );
     const { result } = await response.json();
