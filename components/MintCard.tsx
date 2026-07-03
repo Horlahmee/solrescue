@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { formatSol } from "@/lib/formatSol";
+import { formatSolCompact } from "@/lib/formatSol";
 import { computeFeeSplit } from "@/lib/fee";
 import { Address } from "./Address";
 import { Button } from "./ui";
@@ -50,7 +50,7 @@ export function MintCard({
         <div>
           <div className="font-mono font-bold text-2xl">
             <span className="bg-teal border-2 border-ink px-1.5">
-              {formatSol(indexedExcess)}
+              {formatSolCompact(indexedExcess)}
             </span>
             <span className="text-sm font-normal text-muted ml-1.5">SOL</span>
           </div>
@@ -60,7 +60,7 @@ export function MintCard({
         </div>
         <div className="text-right">
           <div className="font-mono font-bold text-sm">
-            {formatSol(preview.net)} SOL
+            {formatSolCompact(preview.net)} SOL
           </div>
           <div className="text-xs text-muted mt-0.5">you receive</div>
         </div>
