@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createAnonClient } from "@/lib/supabaseClient";
-import { formatSol } from "@/lib/formatSol";
+import { formatSolCompact } from "@/lib/formatSol";
 import { Skeleton } from "./ui";
 
 interface Stats {
@@ -28,7 +28,7 @@ export function StatsBar() {
   const items: Array<[string, string | null, string]> = [
     [
       "recoverable SOL indexed",
-      stats ? formatSol(BigInt(stats.total_recoverable_lamports)) : null,
+      stats ? formatSolCompact(BigInt(stats.total_recoverable_lamports)) : null,
       "bg-teal",
     ],
     [
@@ -38,7 +38,7 @@ export function StatsBar() {
     ],
     [
       "SOL recovered",
-      stats ? formatSol(BigInt(stats.total_recovered_lamports)) : null,
+      stats ? formatSolCompact(BigInt(stats.total_recovered_lamports)) : null,
       "bg-amber",
     ],
     [

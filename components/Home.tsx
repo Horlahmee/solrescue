@@ -37,18 +37,21 @@ export function Home({ feeWallet, feeBps }: HomeProps) {
 
   return (
     <main className="max-w-3xl mx-auto px-6 py-8 sm:py-10 flex flex-col gap-10 min-h-dvh">
-      <header className="flex items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <Link href="/" className="font-display font-bold text-lg tracking-tight">
+      <header className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 min-w-0">
+          <Link
+            href="/"
+            className="font-display font-bold text-lg tracking-tight shrink-0"
+          >
             Sol<span className="bg-teal px-1 border-2 border-ink">Rescue</span>
           </Link>
           {cluster === "devnet" && (
-            <span className="font-mono text-[11px] font-bold uppercase tracking-wider bg-amber border-2 border-ink px-2 py-0.5 -rotate-2">
+            <span className="font-mono text-[11px] font-bold uppercase tracking-wider bg-amber border-2 border-ink px-2 py-0.5 -rotate-2 shrink-0">
               devnet
             </span>
           )}
         </div>
-        <nav className="flex items-center gap-4">
+        <nav className="flex items-center gap-2 sm:gap-4 shrink-0">
           <Link
             href="/"
             className="hidden sm:inline text-sm font-semibold hover:underline underline-offset-4 decoration-2"

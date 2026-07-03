@@ -1,4 +1,4 @@
-import { formatSol } from "@/lib/formatSol";
+import { formatSolCompact } from "@/lib/formatSol";
 import type { LeaderboardRow } from "./landing/data";
 
 // Shared presentational table — server-rendered on the landing page,
@@ -25,7 +25,7 @@ export function TopMintsTable({ rows }: { rows: LeaderboardRow[] }) {
                 className={i % 2 ? "bg-surface-2" : "bg-surface"}
               >
                 <td className="px-5 py-3 font-mono text-muted">{i + 1}</td>
-                <td className="px-5 py-3 font-mono font-bold">
+                <td className="px-5 py-3 font-mono font-bold whitespace-nowrap">
                   {row.token_symbol ??
                     `${row.mint_address.slice(0, 4)}…${row.mint_address.slice(-4)}`}
                 </td>
@@ -36,7 +36,7 @@ export function TopMintsTable({ rows }: { rows: LeaderboardRow[] }) {
                 </td>
                 <td className="px-5 py-3 text-right">
                   <span className="font-mono font-bold bg-teal border-2 border-ink px-2 py-0.5 whitespace-nowrap">
-                    {formatSol(BigInt(row.excess_lamports))} SOL
+                    {formatSolCompact(BigInt(row.excess_lamports))} SOL
                   </span>
                 </td>
               </tr>

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { formatSol } from "@/lib/formatSol";
+import { formatSolCompact } from "@/lib/formatSol";
 import { GithubIcon } from "@/components/icons";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import type { LandingStats } from "./data";
@@ -78,7 +78,7 @@ export function Hero({ stats }: { stats: LandingStats }) {
 
       <div className="nb rounded-lg grid grid-cols-2 sm:grid-cols-4 divide-x-2 divide-y-2 sm:divide-y-0 divide-ink overflow-hidden">
         <Stat
-          value={formatSol(BigInt(stats.total_recoverable_lamports))}
+          value={formatSolCompact(BigInt(stats.total_recoverable_lamports))}
           unit="SOL"
           label="recoverable, indexed"
           bg="bg-teal"
@@ -89,7 +89,7 @@ export function Hero({ stats }: { stats: LandingStats }) {
           bg="bg-surface"
         />
         <Stat
-          value={formatSol(BigInt(stats.total_recovered_lamports))}
+          value={formatSolCompact(BigInt(stats.total_recovered_lamports))}
           unit="SOL"
           label="recovered"
           bg="bg-amber"
